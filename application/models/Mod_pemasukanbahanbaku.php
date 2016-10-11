@@ -176,15 +176,17 @@ class Mod_pemasukanbahanbaku extends CI_Model
 	public function prepare_mutation()
 	{
 		$this->db->select('a.*',false);
+                $this->db->select_sum('jumlah');                
+		$this->db->select_sum('jumlah_lbs');
 		$this->db->select_sum('qty_pib');
 		$this->db->select_sum('amount_pib');
 		$this->db->select_sum('qty_dn');
-        $this->db->from($this->table_master." a");
+                $this->db->from($this->table_master." a");
 		$this->db->group_by("a.nomor");
 		$this->db->group_by("a.tanggal_bukti");
 		$this->db->group_by("a.material_id");
 		$this->db->group_by("a.batch");
-		
+//		print_r($this->db);
 		$row = $this->db->get()->result();
 		
 		$arrins = array();

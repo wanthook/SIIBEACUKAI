@@ -70,7 +70,7 @@ class Mod_pemakaianbahanbaku extends CI_Model
         
         if(empty($select))
         {
-            $this->db->select("a.*,"
+            $this->db->select("a.nomor,a.tanggal,a.material_id,a.batch,a.satuan,a.penerima,a.mark,a.pemakaianbahanbaku_id,a.created_at,"
                             . "b.nama,"
                             . "c.material_code,"
                             . "c.material_desc,"
@@ -81,19 +81,21 @@ class Mod_pemakaianbahanbaku extends CI_Model
             $this->db->select($select,false);
         }
         
-		$this->db->select_sum('digunakan');
-		$this->db->select_sum('digunakan_lbs');
-		$this->db->select_sum('disubkontrak');
-        $this->db->from($this->table_master." a");
+		$this->db->select('SUM(distinct a.digunakan) as digunakan',false);
+		$this->db->select('SUM(distinct a.digunakan_lbs) as digunakan_lbs',false);
+		$this->db->select('SUM(distinct a.disubkontrak) as disubkontrak',false);
+                $this->db->from($this->table_master." a");
 		$this->db->join("pemasukanbahanbaku tbla","a.batch=tbla.batch",'LEFT');
-        $this->db->join($this->table_user." b","a.created_by=b.user_id",'LEFT');
-        $this->db->join($this->table_material." c","a.material_id=c.material_id",'LEFT');
+                $this->db->join($this->table_user." b","a.created_by=b.user_id",'LEFT');
+                $this->db->join($this->table_material." c","a.material_id=c.material_id",'LEFT');
 		$this->db->group_by("a.nomor");
 		$this->db->group_by("a.tanggal");
 		$this->db->group_by("a.material_id");
 		$this->db->group_by("a.batch");
 		$this->db->order_by("a.tanggal","ASC");
 		$this->db->order_by("a.nomor","ASC");
+                //print_r($this->db);
+//                print_r($this->db->get());
         return $this->db->get();
     }
     public function create_master($data)
@@ -166,20 +168,28 @@ class Mod_pemakaianbahanbaku extends CI_Model
     }
 	public function prepare_mutation()
 	{
-		$this->db->select('a.*',false);
+//		$this->db->select('a.*',false);
+                $this->db->select("a.nomor,"
+                        . "a.tanggal,"
+                        . "a.material_id,"
+                        . "a.batch,"
+                        . "a.satuan,"
+                        . "a.penerima,"
+                        . "a.mark,"
+                        . "a.pemakaianbahanbaku_id,"
+                        . "a.created_at,",false);
 		$this->db->select('tbla.gudang');
 		$this->db->select('tbla.nomor_bukti');
 		$this->db->select('tbla.tanggal_bukti');
-		$this->db->select_sum('digunakan');
-		$this->db->select_sum('digunakan_lbs');
-		$this->db->select_sum('disubkontrak');
-        $this->db->from($this->table_master." a");
+                $this->db->select('SUM(distinct a.digunakan) as digunakan',false);
+		$this->db->select('SUM(distinct a.digunakan_lbs) as digunakan_lbs',false);
+		$this->db->select('SUM(distinct a.disubkontrak) as disubkontrak',false);
+                $this->db->from($this->table_master." a");
 		$this->db->join("pemasukanbahanbaku tbla","a.batch=tbla.batch",'LEFT');
 		$this->db->group_by("a.nomor");
 		$this->db->group_by("a.tanggal");
 		$this->db->group_by("a.material_id");
 		$this->db->group_by("a.batch");
-		
 		$row = $this->db->get()->result();
 		
 		$arrins = array();
@@ -199,7 +209,6 @@ class Mod_pemakaianbahanbaku extends CI_Model
 				"gudang" => $res->gudang
 			);
 		}
-		
 		$this->db->from('tempmutasiout');
         $this->db->truncate();
 		//print_r($arrins);

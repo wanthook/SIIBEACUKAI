@@ -226,7 +226,7 @@ $controller = "UploadData";
                     });
             },
             complete: function(xhr) {
-                jQuery.alerts.dialogClass = 'alert-info';
+                jQuery.alerts.dialogClass = 'alert-warning';
                 jAlert('Data selesai diproses.', 'Informasi', function(){
                        jQuery.alerts.dialogClass = null; // reset to default
                     });

@@ -67,6 +67,7 @@ $controller = "PemakaianSubKontrak";
                                          'Batch',
                                          'Satuan',
                                          'Jumlah Disubkontrakkan',
+                                         'Jumlah Disubkontrakkan (LBS)',
                                          'Penerima Sub-Kontrak');
                         ?>
                         <colgroup>
@@ -160,12 +161,6 @@ $controller = "PemakaianSubKontrak";
             
             var urli = "<?php echo site_url($controller.'/excel'); ?>?sD="+jQuery('#txtDateStart').val()+"&eD="+jQuery('#txtDateEnd').val();
         
-//            var dialog = new BootstrapDialog(
-//            {
-//                title : "Informasi",
-//                message: "Menyiapkan file pdf"
-//            });
-
             window.open(urli);
         });
         
@@ -210,6 +205,7 @@ $controller = "PemakaianSubKontrak";
                 { "data": "batch" },
                 { "data": "satuan" },
                 { "data": "disubkontrak" },
+                { "data": "disubkontrak_lbs" },
                 { "data": "penerima" }
                 
             ]
@@ -220,37 +216,6 @@ $controller = "PemakaianSubKontrak";
             format:'dd-mm-yyyy'
         });
     });
-//    function deleteData(id)
-//    {
-//        if(confirm('Apakah anda yakin ingin menghapus data ini?'))
-//        {
-//            jQuery.ajax({
-//                type: "POST",
-//                url: "<?php echo site_url($controller.'/procRemove'); ?>",
-//                dataType: 'json',
-//                data: {id:id},
-//                success: function(res) 
-//                {
-//                    if(res.status=='1')
-//                    {
-//                        jQuery.alerts.dialogClass = 'alert-success';
-//                        jAlert(res.msg, 'Informasi', function(){
-//                            jQuery.alerts.dialogClass = null; // reset to default
-//                        });
-//                        
-//                        $table.ajax.reload();
-//                    }
-//                    else if(res.status=='0')
-//                    {
-//                        jQuery.alerts.dialogClass = 'alert-warning';
-//                        jAlert(res.msg, 'Warning', function(){
-//                            jQuery.alerts.dialogClass = null; // reset to default
-//                        });
-//                    }
-//                }
-//            });
-//        }
-//    }
 </script>
 <style>
 th, td { white-space: nowrap; }

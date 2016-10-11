@@ -178,18 +178,17 @@ $controller = "MutasiBahanBaku";
         
             window.open(urli);
         });
-//        jQuery('#tableId_length').html("Bla");
         
         table = jQuery('#tableId').DataTable( {
             "sPaginationType": "full_numbers",
             "searching":false,
-            "ordering": true,
+            "ordering": false,
             "scrollY": 400,
             "scrollX": true,
             "deferRender": true,
             "processing": true,
             "serverSide": true,
-            "lengthMenu": [ 10, 25, 50, 75, 100, 500, 1000, 1500, 2000 ],
+            "lengthMenu": [ 100, 500, 1000, 1500, 2000, 5000,10000 ],
             "ajax": 
             {
                 "url"   : "<?php echo site_url($controller.'/table'); ?>",

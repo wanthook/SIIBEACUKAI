@@ -663,13 +663,4 @@ class PemasukkanBahanBaku extends Secure_area
             
         }
     }
-    
-    private function generateFaktur()
-    {
-        $q      = $this->Mod_bpb->select_master("",0,0,array(),array(),"max(a.bpbMasterId) mx");
-        
-        $hasil  = $q->result();
-        $val    = $hasil[0]->mx+1;
-        return "7".sprintf("%07d",$val);
-    }
 }

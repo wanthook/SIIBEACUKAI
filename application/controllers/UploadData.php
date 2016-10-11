@@ -38,6 +38,90 @@ class UploadData extends Secure_area
         $this->_viewloader("UploadData/FormUpload", '',"UploadData");
     }
     
+    
+    private function proc_mutation()
+    {
+        $this->Mod_pemasukanbahanbaku->prepare_mutation();
+        $this->Mod_pemakaianbahanbaku->prepare_mutation();
+        $this->Mod_pemakaiansubkontrak->prepare_mutation();
+        
+        $row = $this->Mod_mutasibahanbaku->get_temp();
+        
+        $batch = "";
+        $in     = 0;
+        $inLbs  = 0;
+        $out    = 0;
+        $outLbs = 0;
+        $saldoAwal  = 0;
+        $saldoAwalLbs  = 0;
+        $saldoAkhir = 0;
+        $saldoAkhirLbs = 0;
+        
+        $hsl    = array();
+        
+        if($row->num_rows()>0)
+        {
+            $res = $row->result();
+//            print_r($res);
+            foreach($res as $r)
+            {
+                if($batch!=$r->batch)
+                {
+                    $batch = $r->batch;
+                    $in     = round((float)$r->jml_in,3);
+                    $inLbs  = round((float)$r->jmllbs_in,3);
+                    $saldoAwal  = 0;
+                    $saldoAwalLbs  = 0;
+                    $saldoAkhir = 0;
+                    $saldoAkhirLbs = 0;
+                }
+                
+                $saldoAwal = round((float)$saldoAkhir,3);
+                $saldoAwalLbs = round((float)$saldoAkhirLbs,3);
+                $out    = round((float)$r->jml_out,3);
+                $outLbs = round((float)$r->jmlabs_out,3);
+                if($saldoAwal == 0)
+                {
+                    $saldoAkhir = $in-$out;
+                    $saldoAkhirLbs = $inLbs-$outLbs;
+                }
+                else
+                {
+                    $saldoAkhir = $saldoAwal-$out;
+                    $saldoAkhirLbs = $saldoAwalLbs-$outLbs;
+                }
+                
+                $hsl[]  = array('tanggal' => $r->tgl_pakai,
+                                'material_id' => $r->material_id,
+                                'batch' => $batch,
+                                'satuan' => $r->satuan,
+                                'saldo_awal' => $saldoAwal,
+                                'saldo_awal_lbs' => $saldoAwalLbs,
+                                'pemasukan' => $in,
+                                'pemasukan_lbs' => $inLbs,
+                                'pengeluaran' =>$out,
+                                'pengeluaran_lbs' => $outLbs,
+                                'saldo_akhir' => round((float)$saldoAkhir,3),
+                                'saldo_akhir_lbs' => round((float)$saldoAkhirLbs,3),
+                                'gudang' => $r->gudang);
+                
+                if($in > 0)
+                {
+                    $in = 0;
+                }
+                if($inLbs > 0)
+                {
+                    $inLbs = 0;
+                }
+            }
+        }
+        if(count($hsl)>0)
+        {
+            $this->Mod_mutasibahanbaku->freeup_table();
+            $this->Mod_mutasibahanbaku->create_master_batch($hsl);
+        }
+    }
+    
     function table()
     {
         
@@ -114,6 +198,11 @@ class UploadData extends Secure_area
             
             
             $this->Mod_logupload->update_master($updData,array('field'=>upload_id,'value'=>$fileLogId));
+            
+            /*
+             * proc mutation
+             */
+            $this->proc_mutation();
             
             $ret    = array("status" => 1, "msg" => "Data berhasil diupload.");
         }
@@ -514,7 +603,7 @@ class UploadData extends Secure_area
                 
                 $crc32                          = sprintf("%x", crc32(implode('', $arrD)));
                 
-                $rowCrc                         = $this->Mod_pemakaianbahanbaku->select_master(array('crc'=>$crc32));
+                $rowCrc                         = $this->Mod_pemakaianbahanbaku->select_master(array('a.crc'=>$crc32));
                 
                 $arrD['mark']                   = trim($arrS['M']);
                 
@@ -602,7 +691,8 @@ class UploadData extends Secure_area
                 $arrD['batch']                  = trim($arrS['G']);
                 $arrD['satuan']                 = trim($arrS['H']);
                 $arrD['disubkontrak']           = $this->fungsi->toFloat(trim($arrS['I']));
-                $arrD['penerima']               = trim($arrS['J']);
+                $arrD['disubkontrak_lbs']       = $this->fungsi->toFloat(trim($arrS['J']));
+                $arrD['penerima']               = trim($arrS['K']);
                 
                 $crc32                          = sprintf("%x", crc32(implode('', $arrD)));
                 
@@ -612,7 +702,7 @@ class UploadData extends Secure_area
                 
                 if($rowCrc->num_rows()>0)
                 {
-					$res = $rowCrc->row();
+		    $res = $rowCrc->row();
 					
                     if($arrD['mark']==$res->mark)
                     {

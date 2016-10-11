@@ -69,6 +69,7 @@ class PemakaianSubKontrak extends Secure_area
                         'batch',
                         'satuan',
                         'disubkontrak',
+                        'disubkontrak_lbs',
                         'penerima',
                         'pemakaiansubkontrak_id');
         
@@ -108,6 +109,7 @@ class PemakaianSubKontrak extends Secure_area
                 'batch'                 => $res->batch,
                 'satuan'                => $res->satuan,
                 'disubkontrak'          => $res->disubkontrak,
+                'disubkontrakLbs'          => $res->disubkontrak_lbs,
                 'penerima'              => $res->penerima,
                 'mark'                  => $res->mark,
                 'pemakaiansubkontrak_id' => $res->pemakaiansubkontrak_id,
@@ -154,6 +156,7 @@ class PemakaianSubKontrak extends Secure_area
                    <th rowspan="2">Batch</th>
                    <th rowspan="2">Satuan</th>
                    <th>Jumlah</th>
+                   <th>Jumlah</th>
                    <th>Penerima</th>
                    <th rowspan="2">mark</th>
                    </tr>
@@ -161,6 +164,7 @@ class PemakaianSubKontrak extends Secure_area
                    <th>Nomor</th>
                    <th>Tanggal</th>
                    <th>Disubkontrakkan</th>
+                   <th>Disubkontrakkan (LBS)</th>
                    <th>Subkontrak</th>
                    </tr>';
         
@@ -186,6 +190,7 @@ class PemakaianSubKontrak extends Secure_area
                 $tabel .= '<td>'.$dataValue->batch.'</td>';
                 $tabel .= '<td>'.$dataValue->satuan.'</td>';
                 $tabel .= '<td>'.$dataValue->disubkontrak.'</td>';
+                $tabel .= '<td>'.$dataValue->disubkontrak_lbs.'</td>';
                 $tabel .= '<td>'.$dataValue->penerima.'</td>';
                 $tabel .= '<td>'.$dataValue->mark.'</td>';
                 $tabel .= '</tr>';
@@ -245,6 +250,7 @@ class PemakaianSubKontrak extends Secure_area
                    'Batch',
                    'Satuan',
                    'Jumlah Disubkontrakkan',
+                    'Jumlah Disubkontrakkan (LBS)',
                    'Penerima Subkontrak',
                    'mark');
         
@@ -269,6 +275,7 @@ class PemakaianSubKontrak extends Secure_area
                     $dataValue->batch,
                     $dataValue->satuan,
                     $dataValue->disubkontrak,
+                    $dataValue->disubkontrak_lbs,
                     $dataValue->penerima,
                     $dataValue->mark
                 );
@@ -307,100 +314,6 @@ class PemakaianSubKontrak extends Secure_area
         {
             echo validation_errors();
         }
-    }
-    
-    function procSS()
-    {
-        $txtKodeBarang           = $this->input->post('txtKodeBarang');
-        
-        print_r($txtKodeBarang);
-    }
-    
-    function proc()
-    {
-        $id = $this->input->post('txtId');
-        
-        $tanggalExp = explode("-", $this->input->post('txtTanggalBpb'));
-//        echo "kesini";
-        /*
-         * master variable
-         */
-        $val['noFaktur']        = $this->input->post('txtNoFaktur');
-        $val['noBukti']         = $this->input->post('txtNoBukti');
-        $val['noPo']            = $this->input->post('txtNoPo');
-        $val['sales']           = $this->input->post('txtSales');
-        $val['langgananId']     = $this->input->post('txtLangganan');
-        $val['kriteria']        = $this->input->post('txtKriteria');
-        $val['syaratPenjualan'] = $this->input->post('txtSyarat');
-        $val['tanggalBpb']      = $tanggalExp[2]."-".$tanggalExp[1]."-".$tanggalExp[0];
-        
-        /*
-         * detail variable
-         */
-        $det['barangId']        = $this->input->post('txtKodeBarang');
-        $det['unit']            = $this->input->post('txtUnit');
-        $det['hargaSatuan']     = $this->input->post('txtHargaSatuan');
-        $det['diskon']          = $this->input->post('txtDiskon');
-        $det['jumlah']          = $this->input->post('txtJumlah');
-        
-//        $this->validationForm();
-        
-        $ret = array();
-        
-        $masterId = 0;
-        /*
-         * Check Save or Edit
-         * empty true = new
-         * empty false = edit
-         */
-        if(empty($id))
-        {
-            $mstr = $this->Mod_bpb->select_master(array(
-                'bpbMasterId'   => $id,
-                'a.hapus'       => '1'
-            ));
-//            echo "kesini";
-            //jika tidak terdapat isinya nilainya < 0
-            if($mstr->num_rows()<1)
-            {
-                $det = $this->processDetail($det);
-                
-                $val['jumlah']  = $det['jumlah'];
-                
-                if(count($det['data'])>0)
-                {
-                    $masterId = $this->save($val);
-
-                    //ketika save berhasil
-                    if($masterId>0)
-                    {
-                        //cek detail ada isinya atau tidak
-                        $this->saveDetail($det['data'], $masterId);
-
-                        foreach($det['updateBarang'] as $ubK => $ubV)
-                        {
-                            $this->editBarang($ubV, $ubV['barangId']);
-                        }
-
-                        $this->saveLog($det['log']);   
-
-                        $ret = array('status'=>1,
-                         'msg'=>'Berhasil disimpan!!!');
-                    }
-                    else
-                    {
-                        $ret = array('status'=>0,
-                         'msg'=>'Data gagal disimpan!!!');
-                    }
-                }
-                else
-                {
-                    $ret = array('status'=>0,
-                         'msg'=>'Transaksi detail masih kosong!!!');
-                }
-            }  
-        }
-        echo json_encode($ret);
     }
     
     function procRemove()
