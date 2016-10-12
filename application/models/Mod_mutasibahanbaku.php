@@ -94,7 +94,23 @@ class Mod_mutasibahanbaku extends CI_Model
         
         if(empty($select))
         {
-            $this->db->select("a.*,"
+            $this->db->select("a.tanggal,
+                        a.tanggal_akhir,
+                        a.material_id,
+                        a.batch,
+                        a.satuan,
+                        a.saldo_awal,
+                        a.saldo_awal_lbs,
+                        sum(a.pemasukan) as pemasukan,
+                        sum(a.pemasukan_lbs) as pemasukan_lbs,
+                        sum(a.pengeluaran) as pengeluaran,
+                        sum(a.pengeluaran_lbs) as pengeluaran_lbs,
+                        a.saldo_akhir,
+                        a.saldo_akhir_lbs,
+                        a.gudang,
+                        a.mutasibahanbaku_id,
+                        a.created_by,
+                        a.created_at,"
                             . "b.nama,"
                             . "c.material_code,"
                             . "c.material_desc",false);
@@ -108,7 +124,8 @@ class Mod_mutasibahanbaku extends CI_Model
         $this->db->join($this->table_user." b","a.created_by=b.user_id",'LEFT');
         $this->db->join($this->table_material." c","a.material_id=c.material_id",'LEFT');
 //        $this->db->order_by('a.batch,a.tanggal','asc');
-        $this->db->order_by('a.mutasibahanbaku_id','ASC');
+        $this->db->group_by('a.batch');
+        $this->db->order_by('a.batch, a.mutasibahanbaku_id','ASC');
         return $this->db->get();
     }
     public function create_master($data)

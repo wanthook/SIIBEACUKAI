@@ -267,16 +267,15 @@ class MutasiBahanBaku extends Secure_area
                 'matDes'                => $lblmatdesc,
                 'batch'                 => $lblbatch,
                 'satuan'                => $res->satuan,
-                'saldo_awal'            => $res->saldo_awal,								
-				'lbsSaldo_awal'         => $res->saldo_awal_lbs,
-                'pemasukan'             => $res->pemasukan,								
-				'lbsPemasukan'          => $res->pemasukan_lbs,
-                'pengeluaran'           => $res->pengeluaran,								
-				'lbsPengeluaran'        => $res->pengeluaran_lbs,
-                'saldo_akhir'           => $res->saldo_akhir,								
-				'lbsSaldo_akhir'        => $res->saldo_akhir_lbs,
+                'saldo_awal'            => number_format($res->saldo_awal,3),								
+                'lbsSaldo_awal'         => number_format($res->saldo_awal_lbs,3),
+                'pemasukan'             => number_format($res->pemasukan,3),								
+                'lbsPemasukan'          => number_format($res->pemasukan_lbs,3),
+                'pengeluaran'           => number_format($res->pengeluaran,3),								
+                'lbsPengeluaran'        => number_format($res->pengeluaran_lbs,3),
+                'saldo_akhir'           => number_format((float)($res->saldo_awal+$res->pemasukan-$res->pengeluaran),3),								
+                'lbsSaldo_akhir'        => number_format((float)($res->saldo_awal_lbs+$res->pemasukan_lbs-$res->pengeluaran_lbs),3),
                 'gudang'                => $res->gudang,
-                'mark'                  => $res->mark,
                 'mutasibahanbaku_id'    => $res->mutasibahanbaku_id,
                 'createdAt'             => $this->fungsi->convertDate($res->created_at,"d-m-Y H:i:s")
             );
@@ -318,10 +317,14 @@ class MutasiBahanBaku extends Secure_area
                    <th>Nama Barang</th>
                    <th>Batch</th>
                    <th>Satuan</th>
-                   <th>Saldo Awal</th>				   				   <th>Saldo Awal (LBS)</th>
-                   <th>Pemasukkan</th>				   				   <th>Pemasukkan (LBS)</th>
-                   <th>Pengeluaran</th>				   				   <th>Pengeluaran (LBS)</th>
-                   <th>Saldo Akhir</th>				   				   <th>Saldo Akhir (LBS)</th>
+                   <th>Saldo Awal</th>				   				   
+                   <th>Saldo Awal (LBS)</th>
+                   <th>Pemasukkan</th>				   				   
+                   <th>Pemasukkan (LBS)</th>
+                   <th>Pengeluaran</th>				   				   
+                   <th>Pengeluaran (LBS)</th>
+                   <th>Saldo Akhir</th>				   				   
+                   <th>Saldo Akhir (LBS)</th>
                    <th>Gudang</th>
                    </tr>';
         
@@ -343,10 +346,14 @@ class MutasiBahanBaku extends Secure_area
                 $tabel .= '<td>'.$dataValue->material_desc.'</td>';
                 $tabel .= '<td>'.$dataValue->batch.'</td>';
                 $tabel .= '<td>'.$dataValue->satuan.'</td>';
-                $tabel .= '<td>'.$dataValue->saldo_awal.'</td>';								$tabel .= '<td>'.$dataValue->saldo_awal-lbs.'</td>';
-                $tabel .= '<td>'.$dataValue->pemasukan.'</td>';								$tabel .= '<td>'.$dataValue->pemasukan_lbs.'</td>';
-                $tabel .= '<td>'.$dataValue->pengeluaran.'</td>';								$tabel .= '<td>'.$dataValue->pengeluaran_lbs.'</td>';
-                $tabel .= '<td>'.$dataValue->saldo_akhir.'</td>';								$tabel .= '<td>'.$dataValue->saldo_akhir_lbs.'</td>';
+                $tabel .= '<td>'.$dataValue->saldo_awal.'</td>';								
+                $tabel .= '<td>'.$dataValue->saldo_awal_lbs.'</td>';
+                $tabel .= '<td>'.$dataValue->pemasukan.'</td>';								
+                $tabel .= '<td>'.$dataValue->pemasukan_lbs.'</td>';
+                $tabel .= '<td>'.$dataValue->pengeluaran.'</td>';								
+                $tabel .= '<td>'.$dataValue->pengeluaran_lbs.'</td>';
+                $tabel .= '<td>'.number_format((float)($dataValue->saldo_awal+$dataValue->pemasukan-$dataValue->pengeluaran),3).'</td>';								
+                $tabel .= '<td>'.number_format((float)($dataValue->saldo_awal_lbs+$dataValue->pemasukan_lbs-$dataValue->pengeluaran_lbs),3).'</td>';
                 $tabel .= '<td>'.$dataValue->gudang.'</td>';
                 $tabel .= '</tr>';
                 
@@ -424,10 +431,14 @@ class MutasiBahanBaku extends Secure_area
                     $dataValue->material_desc,
                     $dataValue->batch,
                     $dataValue->satuan,
-                    $dataValue->saldo_awal,										$dataValue->saldo_awal_lbs,
-                    $dataValue->pemasukan,										$dataValue->pemasukan_lbs,
-                    $dataValue->pengeluaran,										$dataValue->pengeluaran_lbs,
-                    $dataValue->saldo_akhir,										$dataValue->saldo_akhir_lbs,
+                    $dataValue->saldo_awal,										
+                    $dataValue->saldo_awal_lbs,
+                    $dataValue->pemasukan,										
+                    $dataValue->pemasukan_lbs,
+                    $dataValue->pengeluaran,										
+                    $dataValue->pengeluaran_lbs,
+                    number_format((float)($dataValue->saldo_awal+$dataValue->pemasukan-$dataValue->pengeluaran),3),										
+                    number_format((float)($dataValue->saldo_awal_lbs+$dataValue->pemasukan_lbs-$dataValue->pengeluaran_lbs),3),
                     $dataValue->gudang
                 );
                 $no++;
