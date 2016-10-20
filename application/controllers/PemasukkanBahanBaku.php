@@ -27,6 +27,12 @@ class PemasukkanBahanBaku extends Secure_area
         $this->_viewloader("Laporan/PemasukkanBahanBaku", '',"PemasukkanBahanBaku");
     }
     
+    function detail()
+    {
+        $p = $this->input->post_get('p');
+        $this->_viewloader("Laporan/PemasukkanBahanBakuDetail",array("p"=>$p),"PemasukkanBahanBaku");
+    }
+    
     function table()
     {
         
@@ -114,6 +120,7 @@ class PemasukkanBahanBaku extends Secure_area
         foreach($dMaRes as $res)
         {
             $data[] = array(
+                'action'                => '<a class="btn btn-warning" href="'.  site_url("PemasukkanBahanBaku/detail?p=".$res->nomor).'">Detail</a>',
                 'jenisDokumen'          => $res->jenis_dokumen,
                 'no'                    => $res->nomor,
                 'tgl'                   => $this->fungsi->convertDate($res->tanggal,"d-m-Y"),
@@ -149,6 +156,103 @@ class PemasukkanBahanBaku extends Secure_area
         }
         
         $ret['draw']            = $draw;
+        $ret['recordsTotal']    = $totData;
+        $ret['recordsFiltered'] = $filData;
+        $ret['data']            = $data;
+        
+        echo json_encode($ret);
+    }
+    
+    function tableDetail()
+    {
+        
+        $sel = 'a.hapus=1 ';
+        
+        $id = $this->input->post_get('p');
+        /*
+         * order
+         */
+        $arrCol = array('jenis_dokumen',
+                        'nomor',
+                        'tanggal',
+                        'nomor_seri',
+                        'nomor_bukti',
+                        'tanggal_bukti',
+                        'material_code',
+                        'material_desc',
+                        'batch',
+                        'satuan',
+                        'jumlah',												'jumlah_lbs',
+                        'qty_pib',
+                        'amount_pib',
+                        'qty_dn',
+                        'amount_dn',
+                        'no_doc_dn',
+                        'mataUang',
+                        'nilaiBarang',
+                        'gudang',
+                        'penerima',
+                        'negara',
+                        'mark',
+                        'pemasukanbahanbaku_id');
+        
+//        $oBy    = $arrCol[$order[0]['column']];
+//        $oTy    = $order[0]['dir'];
+        
+        $ret = array();
+                
+        $data = array();      
+        
+        $q      = $this->Mod_pemasukanbahanbaku->detail($id);
+        $totData = $q->num_rows();
+        
+        $filData = $q->num_rows();
+//        $q->free_result();
+        //echo $sel;
+        $dMa = $q;
+        
+        
+        $dMaRes = $dMa->result();
+        
+        foreach($dMaRes as $res)
+        {
+            $data[] = array(
+                'action'                => '<a class="btn btn-warning" href="'.  site_url("PemasukkanBahanBaku/detail?p=".$res->nomor).'">Detail</a>',
+                'jenisDokumen'          => $res->jenis_dokumen,
+                'no'                    => $res->nomor,
+                'tgl'                   => $this->fungsi->convertDate($res->tanggal,"d-m-Y"),
+                'noSeri'                => $res->nomor_seri,
+                'noBukti'               => $res->nomor_bukti,
+                'tglBukti'              => $this->fungsi->convertDate($res->tanggal_bukti,"d-m-Y"),
+                'matCode'               => $res->material_code,
+                'matDes'                => $res->material_desc,
+                'batch'                 => $res->batch,
+                'satuan'                => $res->satuan,
+                'jumlah'                => $res->jumlah,
+                'lbsJumlah'             => $res->jumlah_lbs,								
+				'satuanlbs'             => 'LBS',
+                'pibqty'                => $res->qty_pib,
+                'pibamount'             => $res->amount_pib,
+                'dnqty'                 => $res->qty_dn,
+				 //'pibqty'                => $res->sQtyPib,
+                //'pibamount'             => $res->sAmtPib,
+                //'dnqty'                 => $res->sQtyDn,
+                'dnamount'              => $res->amount_dn,
+                'dndoc'                => $res->no_doc_dn,
+                
+                'mataUang'              => $res->mata_uang,
+                'nilaiBarang'           => $res->nilai_barang,
+                'gudang'                => $res->gudang,
+                'penerima'              => $res->penerima,
+                'negara'                => $res->negara,
+                'mark'                  => $res->mark,
+                'pemasukanbahanbaku_id' => $res->pemasukanbahanbaku_id,
+                'createdAt'             => $this->fungsi->convertDate($res->created_at,"d-m-Y H:i:s")
+            );
+//            );
+        }
+        
+        $ret['draw']            = 1;
         $ret['recordsTotal']    = $totData;
         $ret['recordsFiltered'] = $filData;
         $ret['data']            = $data;

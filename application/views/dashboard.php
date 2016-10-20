@@ -14,16 +14,16 @@
             </form>-->
             <div class="pageicon"><span class="iconfa-laptop"></span></div>
             <div class="pagetitle">
-                <h5>All Features Summary</h5>
+                <h5>Welcome</h5>
                 <h1>Dashboard</h1>
             </div>
         </div><!-- END PAGE HEADER -->		
-
+        
         <!-- START MAIN CONTENT -->
         <div class="maincontent">
             <!-- START MAIN CONTAINER -->
             <div class="maincontentinner">
-                
+                Keren
                 
                 <div class="footer">
                     <div class="footer-left">

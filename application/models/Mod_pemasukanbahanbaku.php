@@ -89,14 +89,14 @@ class Mod_pemasukanbahanbaku extends CI_Model
 		$this->db->select_sum('amount_pib');
 		$this->db->select_sum('qty_dn');
 		$this->db->select_sum('nilai_barang');
-        $this->db->from($this->table_master." a");
-        $this->db->join($this->table_user." b","a.created_by=b.user_id",'LEFT');
-        $this->db->join($this->table_material." c","a.material_id=c.material_id",'LEFT');
+                $this->db->from($this->table_master." a");
+                $this->db->join($this->table_user." b","a.created_by=b.user_id",'LEFT');
+                $this->db->join($this->table_material." c","a.material_id=c.material_id",'LEFT');
 		$this->db->group_by("a.nomor");
-		$this->db->group_by("a.tanggal_bukti");
+		$this->db->group_by("a.tanggal");
 		$this->db->group_by("a.material_id");
 		$this->db->group_by("a.batch");
-		$this->db->order_by("a.tanggal_bukti","ASC");
+		$this->db->order_by("a.tanggal","ASC");
 		$this->db->order_by("a.nomor","ASC");
 		
 		//$this->db->order_by("a.material_id","ASC");
@@ -104,6 +104,75 @@ class Mod_pemasukanbahanbaku extends CI_Model
 		//print_r($this->db);
         return $this->db->get();
     }
+    
+    public function detail($p="")
+    {
+        if(empty($p))
+        {
+            return false;
+        }
+        else
+        {
+            $this->db->where('a.nomor',$p);
+        }
+        
+        
+        $this->db->select('a.*',false);
+        $this->db->select('b.nama');
+        $this->db->select('c.material_code');
+        $this->db->select('c.material_desc');
+        $this->db->from($this->table_master." a");
+        $this->db->join($this->table_user." b","a.created_by=b.user_id",'LEFT');
+        $this->db->join($this->table_material." c","a.material_id=c.material_id",'LEFT');
+        
+        $this->db->order_by('a.tanggal,a.pemasukanbahanbaku_id','asc');
+        
+        return $this->db->get();
+        
+    }
+    
+    public function prepare_mutation()
+	{
+		$this->db->select('a.*',false);
+                $this->db->select_sum('jumlah');                
+		$this->db->select_sum('jumlah_lbs');
+		$this->db->select_sum('qty_pib');
+		$this->db->select_sum('amount_pib');
+		$this->db->select_sum('qty_dn');
+                $this->db->from($this->table_master." a");
+		$this->db->group_by("a.nomor");
+		$this->db->group_by("a.tanggal");
+		$this->db->group_by("a.material_id");
+		$this->db->group_by("a.batch");
+//		print_r($this->db);
+		$row = $this->db->get()->result();
+		
+		$arrins = array();
+		
+		foreach($row as $res)
+		{
+			$arrins[] = array(
+                                "tipe"      => "IN",
+				"no_pabean"	=> $res->nomor,
+				"no_bukti" => $res->nomor_bukti,
+				"tgl_bukti" => $res->tanggal_bukti,
+				"material_id" => $res->material_id,
+				"batch" => $res->batch,
+				"jumlah" => $res->jumlah,
+				"satuan" => $res->satuan,
+				"jumlah_lbs" => $res->jumlah_lbs,
+				"gudang" => $res->gudang
+			);
+		}
+		
+                $this->db->from('tempmutasi');
+		$this->db->truncate();
+		//print_r($arrins);
+		$this->db->insert_batch('tempmutasi',$arrins);
+		
+		
+	}
+    
     public function create_master($data)
     {
         $ret = "";
@@ -172,45 +241,4 @@ class Mod_pemasukanbahanbaku extends CI_Model
             $this->db->update($this->table_detil,$data);
         }
     }
-	
-	public function prepare_mutation()
-	{
-		$this->db->select('a.*',false);
-                $this->db->select_sum('jumlah');                
-		$this->db->select_sum('jumlah_lbs');
-		$this->db->select_sum('qty_pib');
-		$this->db->select_sum('amount_pib');
-		$this->db->select_sum('qty_dn');
-                $this->db->from($this->table_master." a");
-		$this->db->group_by("a.nomor");
-		$this->db->group_by("a.tanggal_bukti");
-		$this->db->group_by("a.material_id");
-		$this->db->group_by("a.batch");
-//		print_r($this->db);
-		$row = $this->db->get()->result();
-		
-		$arrins = array();
-		
-		foreach($row as $res)
-		{
-			$arrins[] = array(
-				"no_pabean"	=> $res->nomor,
-				"no_bukti" => $res->nomor_bukti,
-				"tgl_bukti" => $res->tanggal_bukti,
-				"material_id" => $res->material_id,
-				"batch" => $res->batch,
-				"jumlah" => $res->jumlah,
-				"satuan" => $res->satuan,
-				"jumlah_lbs" => $res->jumlah_lbs,
-				"gudang" => $res->gudang
-			);
-		}
-		
-        $this->db->from('tempmutasiin');
-		$this->db->truncate();
-		//print_r($arrins);
-		$this->db->insert_batch('tempmutasiin',$arrins);
-		
-		
-	}
 }

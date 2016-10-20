@@ -20,144 +20,115 @@ class MutasiBahanBaku extends Secure_area
         parent::__construct();
         
         $this->load->model('Mod_mutasibahanbaku');
-//		$this->load->model('Mod_pemasukanbahanbaku');
-//		$this->load->model('Mod_pemakaianbahanbaku');
+		$this->load->model('Mod_pemasukanbahanbaku');
+		$this->load->model('Mod_pemakaianbahanbaku');
+                $this->load->model('Mod_pemakaiansubkontrak');
     }
     
     function index()
     {
-//        $hsl = $this->proc_mutation();
+        $hsl = $this->proc_mutation();
 //        print_r($hsl);
         $this->_viewloader("Laporan/MutasiBahanBaku", '',"MutasiBahanBaku");
     }
     
-    
-//    function table()
-//    {
-//        /* $this->Mod_pemasukanbahanbaku->prepare_mutation(); */
-//        $sel = 'a.hapus=1 ';
-//        
-//        $id = $this->input->post_get('id');
-//        
-//        $start  = $this->input->post_get('start');
-//        $length = $this->input->post_get('length');
-//        
-//        $draw   = $this->input->post_get('draw');
-//        
-//        //$order  = $this->input->post_get('order');
-//        $oBy    = "";
-//        $oTy    = "";
-//        
-//        $sD     = $this->input->post_get('sD');
-//        $eD     = $this->input->post_get('eD');
-//        
-//        
-//        $ret = array();
-//        
-//        if(!empty($sD) && !empty($eD))
-//        {
-//            if(!empty($sel)) $sel .= "and ";
-//            
-//            $sel .= "(tanggal between '".$this->fungsi->convertDate($sD,"Y-m-d")."' and '".$this->fungsi->convertDate($eD,"Y-m-d")."')";
-//        }
-//        else
-//        {
-//            $ret['draw']            = 0;
-//            $ret['recordsTotal']    = 0;
-//            $ret['recordsFiltered'] = 0;
-//            $ret['data']            = array();
-//            echo json_encode($ret);
-//            return;
-//        }
-//        
-//        if(!empty($id))
-//        {
-//            if(!empty($sel)) $sel .= "and ";
-//            
-//            $sel .= "a.mutasibahanbaku_id = '$id'";
-//        }
-//        /*
-//         * order
-//         */
-//        $arrCol = array('material_code',
-//                        'material_desc',
-//                        'batch',
-//                        'satuan',
-//                        'saldo_awal',												'saldo_awal_lbs',
-//                        'pemasukan',												'pemasukan_lbs',
-//                        'pengeluaran',												'pengeluaran_lbs',
-//                        'saldo_akhir',												'saldo_akhir_lbs',
-//                        'gudang',
-//                        'mark',
-//                        'mutasibahanbaku_id');
-//        
-//        //$oBy    = $arrCol[$order[0]['column']];
-//        //$oTy    = $order[0]['dir'];
-//        
-//        $data = array();      
-//        
-//        $q      = $this->Mod_mutasibahanbaku->select_master();
-//        
-//        $totData = $q->num_rows();        
-//        $q->free_result();
-//        
-//        $q      = $this->Mod_mutasibahanbaku->select_master($sel);
-//        
-//        $filData = $q->num_rows();
-//        $q->free_result();
-//        
-//        $dMa = $this->Mod_mutasibahanbaku->select_master($sel,
-//                                            $length,
-//                                            $start,
-//                                            array($oBy=>$oTy));
-//        
-//        
-//        $dMaRes = $dMa->result();
-//        
-//        foreach($dMaRes as $res)
-//        {            
-//            if($batch != $res->batch)
-//            {
-//                $batch = $res->batch;
-//                $lblbatch = $res->batch;
-//                $lblmatcode = $res->material_code;
-//                $lblmatdesc = $res->material_desc;
-//            }
-//            else
-//            {
-////                $lblbatch = "";
-//                $lblmatcode = "";
-//                $lblmatdesc = "";
-//            }
-//            
-//            $data[] = array(
-//                'matCode'               => $lblmatcode,
-//                'matDes'                => $lblmatdesc,
-//                'batch'                 => $lblbatch,
-//                'satuan'                => $res->satuan,
-//                'saldo_awal'            => $res->saldo_awal,								
-//                'lbsSaldo_awal'         => $res->saldo_awal_lbs,
-//                'pemasukan'             => $res->pemasukan,								
-//                'lbsPemasukan'          => $res->pemasukan_lbs,
-//                'pengeluaran'           => $res->pengeluaran,								
-//                'lbsPengeluaran'        => $res->pengeluaran_lbs,
-//                'saldo_akhir'           => $res->saldo_akhir,								
-//                'lbsSaldo_akhir'        => $res->saldo_akhir_lbs,
-//                'gudang'                => $res->gudang,
-//                'mark'                  => $res->mark,
-//                'mutasibahanbaku_id'    => $res->mutasibahanbaku_id,
-//                'createdAt'             => $this->fungsi->convertDate($res->created_at,"d-m-Y H:i:s")
-//            );
-////            );
-//        }
-//        
-//        $ret['draw']            = $draw;
-//        $ret['recordsTotal']    = $totData;
-//        $ret['recordsFiltered'] = $filData;
-//        $ret['data']            = $data;
-//        
-//        echo json_encode($ret);
-//    }
+    private function proc_mutation()
+    {
+        $this->Mod_pemasukanbahanbaku->prepare_mutation();
+        $this->Mod_pemakaianbahanbaku->prepare_mutation();
+        $this->Mod_pemakaiansubkontrak->prepare_mutation();
+        
+        $row = $this->Mod_mutasibahanbaku->get_temp();
+        
+        $batch = "";
+        $in     = 0;
+        $inLbs  = 0;
+        $out    = 0;
+        $outLbs = 0;
+        $saldoAwal  = 0;
+        $saldoAwalLbs  = 0;
+        $saldoAkhir = 0;
+        $saldoAkhirLbs = 0;
+        
+        $hsl    = array();
+        
+        if($row->num_rows()>0)
+        {
+            $res = $row->result();
+//            print_r($res);
+            foreach($res as $r)
+            {
+                $tanggal = $r->tgl_pakai;
+                if($batch!=$r->batch)
+                {
+                    $tanggal = $r->tgl_bukti;
+                    $batch = $r->batch;
+                    $in     = round((float)$r->jumlah,3);
+                    $inLbs  = round((float)$r->jumlah_lbs,3);
+                    $out    = 0;
+                    $outLbs = 0;
+                    $saldoAwal  = 0;
+                    $saldoAwalLbs  = 0;
+                    $saldoAkhir = $in;
+                    $saldoAkhirLbs = $inLbs;
+                }
+                else
+                {
+                    if($r->tipe == 'IN')
+                    {
+                        $tanggal = $r->tgl_bukti;
+                        $in     = round((float)$r->jumlah,3);
+                        $inLbs  = round((float)$r->jumlah_lbs,3);
+                        $out    = 0;
+                        $outLbs = 0;
+                        $saldoAwal  = $saldoAkhir;
+                        $saldoAwalLbs  = $saldoAkhirLbs;
+                        $saldoAkhir = $in+$saldoAwal;
+                        $saldoAkhirLbs = $inLbs+$saldoAwalLbs;
+                    }
+                    else
+                    {
+                        $in     = 0;
+                        $inLbs  = 0;
+                        $out    = round((float)$r->jumlah,3);
+                        $outLbs = round((float)$r->jumlah_lbs,3);
+                        $saldoAwal  = $saldoAkhir;
+                        $saldoAwalLbs  = $saldoAkhirLbs;
+                        $saldoAkhir = $saldoAwal-$out;
+                        $saldoAkhirLbs = $saldoAwalLbs-$outLbs;
+                    }
+                }
+                
+                $hsl[]  = array('tanggal' => $tanggal,
+                                'material_id' => $r->material_id,
+                                'batch' => $batch,
+                                'satuan' => $r->satuan,
+                                'saldo_awal' => $saldoAwal,
+                                'saldo_awal_lbs' => $saldoAwalLbs,
+                                'pemasukan' => $in,
+                                'pemasukan_lbs' => $inLbs,
+                                'pengeluaran' =>$out,
+                                'pengeluaran_lbs' => $outLbs,
+                                'saldo_akhir' => round((float)$saldoAkhir,3),
+                                'saldo_akhir_lbs' => round((float)$saldoAkhirLbs,3),
+                                'gudang' => $r->gudang);
+                
+                if($in > 0)
+                {
+                    $in = 0;
+                }
+                if($inLbs > 0)
+                {
+                    $inLbs = 0;
+                }
+            }
+        }
+        if(count($hsl)>0)
+        {
+            $this->Mod_mutasibahanbaku->freeup_table();
+            $this->Mod_mutasibahanbaku->create_master_batch($hsl);
+        }
+    }
     
     function table()
     {

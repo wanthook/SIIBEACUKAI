@@ -24,6 +24,22 @@ class Mod_mutasihasilproduksi extends CI_Model
         parent::__construct();
     }
     
+    function get_temp()
+    {
+        $this->db->select("a.tipe,
+                            a.material_id,
+                            a.batch,
+                            a.tgl_bukti,
+                            a.tgl_pengeluaran,
+                            a.satuan,
+                            a.jumlah,
+                            a.gudang");
+        $this->db->from("tempmutasihasilproduksi a");
+        $this->db->order_by("batch,tipe,tgl_bukti, tgl_pengeluaran","ASC");
+        
+        return $this->db->get();
+    }
+    
     public function select_master($search=array(),
                                   $limit=0,
                                   $offset=0,
@@ -70,7 +86,19 @@ class Mod_mutasihasilproduksi extends CI_Model
         
         if(empty($select))
         {
-            $this->db->select("a.*,"
+            $this->db->select("a.tanggal,
+                        a.tanggal_akhir,
+                        a.material_id,
+                        a.batch,
+                        a.satuan,
+                        a.saldo_awal,
+                        sum(a.pemasukan) as pemasukan,
+                        sum(a.pengeluaran) as pengeluaran,
+                        a.saldo_akhir,
+                        a.gudang,
+                        a.mutasihasilproduksi_id,
+                        a.created_by,
+                        a.created_at,a.mark,"
                             . "b.nama,"
                             . "c.material_code,"
                             . "c.material_desc",false);
@@ -83,6 +111,8 @@ class Mod_mutasihasilproduksi extends CI_Model
         $this->db->from($this->table_master." a");
         $this->db->join($this->table_user." b","a.created_by=b.user_id",'LEFT');
         $this->db->join($this->table_material." c","a.material_id=c.material_id",'LEFT');
+        $this->db->group_by('a.batch');
+        $this->db->order_by('a.batch, a.tanggal','ASC');
         return $this->db->get();
     }
     public function create_master($data)

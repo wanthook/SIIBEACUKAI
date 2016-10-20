@@ -135,6 +135,7 @@ class Mod_pemakaiansubkontrak extends CI_Model
         foreach($row as $res)
         {
                 $arrins[] = array(
+                        "tipe"  => "OUT",
                         "no_pabean"	=> $res->nomor,
                         "no_bukti" => $res->nomor_bukti,
                         "tgl_bukti" => $res->tanggal_bukti,
@@ -152,7 +153,7 @@ class Mod_pemakaiansubkontrak extends CI_Model
                 //print_r($arrins);
         if(count($arrins)>0)
         {
-            $this->db->insert_batch('tempmutasiout',$arrins);
+            $this->db->insert_batch('tempmutasi',$arrins);
         }
 		
 		

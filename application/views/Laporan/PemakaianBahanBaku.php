@@ -189,7 +189,7 @@ $controller = "PemakaianBahanBaku";
             "deferRender": true,
             "processing": true,
             "serverSide": true,
-            "lengthMenu": [ 10, 25, 50, 75, 100, 500, 1000, 1500, 2000 ],
+            "lengthMenu": [ 100, 500, 1000, 1500, 2000 ],
             "ajax": 
             {
                 "url"   : "<?php echo site_url($controller.'/table'); ?>",
@@ -203,7 +203,7 @@ $controller = "PemakaianBahanBaku";
             },
             "columns": 
             [  
-				{"data":"nomor_pemakaian"},
+                {"data":"nomor_pemakaian"},
                 { "data": "no" },
                 { "data": "tgl" },
                 { "data": "matCode" },

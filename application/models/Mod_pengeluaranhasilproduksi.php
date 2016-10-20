@@ -71,6 +71,7 @@ class Mod_pengeluaranhasilproduksi extends CI_Model
         if(empty($select))
         {
             $this->db->select("a.*,"
+                            . "tbla.nomorpib,"
                             . "b.nama,"
                             . "c.material_code,"
                             . "c.material_desc",false);
@@ -80,11 +81,65 @@ class Mod_pengeluaranhasilproduksi extends CI_Model
             $this->db->select($select,false);
         }
         
+        $this->db->select_sum('jumlah');
+        $this->db->select_sum('nilai_barang');
         $this->db->from($this->table_master." a");
+        $this->db->join("pemasukanhasilproduksi tbla","a.batch=tbla.batch",'LEFT');
         $this->db->join($this->table_user." b","a.created_by=b.user_id",'LEFT');
         $this->db->join($this->table_material." c","a.material_id=c.material_id",'LEFT');
+        $this->db->group_by("a.nomorpeb");
+//        $this->db->group_by("a.tanggalpeb");
+//        $this->db->group_by("a.material_id");
+//        $this->db->group_by("a.batch");
+        $this->db->order_by("a.tanggal","ASC");
+        $this->db->order_by("a.nomor","ASC");
         return $this->db->get();
     }
+    
+    public function prepare_mutation()
+    {
+            $this->db->select('a.nomor');
+            $this->db->select('a.tanggal');
+//            $this->db->select('tbla.tanggal tanggal_bukti',false);
+            $this->db->select('a.material_id');
+            $this->db->select('a.batch');
+            $this->db->select('a.satuan');
+            $this->db->select('a.gudang');        
+            $this->db->select('sum(a.jumlah) as jumlah',false);
+            $this->db->from($this->table_master." a");
+//            $this->db->join("pemasukanhasilproduksi tbla","a.batch=tbla.batch",'LEFT');
+            //$this->db->group_by("a.nomor");
+            $this->db->group_by("a.tanggal");
+            $this->db->group_by("a.material_id");
+            $this->db->group_by("a.batch");
+//		print_r($this->db);
+            $row = $this->db->get()->result();
+
+            $arrins = array();
+
+            foreach($row as $res)
+            {
+                    $arrins[] = array(
+                            "tipe"      => "OUT",
+                            "no_bukti"	=> $res->nomor,
+                            "tgl_pengeluaran" => $res->tanggal,
+//                            "tgl_bukti" => $res->tanggal_bukti,
+                            "material_id" => $res->material_id,
+                            "batch" => $res->batch,
+                            "jumlah" => $res->jumlah,
+                            "satuan" => $res->satuan,
+                            "gudang" => $res->gudang
+                    );
+            }
+
+//            $this->db->from('tempmutasihasilproduksi');
+//            $this->db->truncate();
+            //print_r($arrins);
+            $this->db->insert_batch('tempmutasihasilproduksi',$arrins);
+
+
+    }
+    
     public function create_master($data)
     {
         $ret = "";

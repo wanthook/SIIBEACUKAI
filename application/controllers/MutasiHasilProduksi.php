@@ -20,11 +20,89 @@ class MutasiHasilProduksi extends Secure_area
         parent::__construct();
         
         $this->load->model('Mod_mutasihasilproduksi');
+        $this->load->model('Mod_pemasukanhasilproduksi');
+        $this->load->model('Mod_pengeluaranhasilproduksi');
     }
     
     function index()
     {
+        $hsl = $this->proc_mutation();
         $this->_viewloader("Laporan/MutasiHasilProduksi", '',"MutasiHasilProduksi");
+    }
+    
+    private function proc_mutation()
+    {
+        $this->Mod_pemasukanhasilproduksi->prepare_mutation();
+        $this->Mod_pengeluaranhasilproduksi->prepare_mutation();
+        
+        $row = $this->Mod_mutasihasilproduksi->get_temp();
+        
+        $batch = "";
+        $in     = 0;
+        $inLbs  = 0;
+        $out    = 0;
+        $saldoAwal  = 0;
+        $saldoAkhir = 0;
+        
+        $hsl    = array();
+        
+        if($row->num_rows()>0)
+        {
+            $res = $row->result();
+//            print_r($res);
+            foreach($res as $r)
+            {
+                $tanggal = $r->tgl_pengeluaran;
+                
+                if($batch!=$r->batch)
+                {
+                    $tanggal = $r->tgl_bukti;
+                    $batch = $r->batch;
+                    $in     = round((float)$r->jumlah,3);
+                    $out    = 0;
+                    $saldoAwal  = 0;
+                    $saldoAkhir = $in;
+                }
+                else
+                {
+                    if($r->tipe == 'IN')
+                    {
+                        $tanggal = $r->tgl_bukti;
+                        $in     = round((float)$r->jumlah,3);
+                        $out    = 0;
+                        $saldoAwal  = $saldoAkhir;
+                        $saldoAkhir = $in+$saldoAwal;
+                    }
+                    else
+                    {
+                        $in     = 0;
+                        $out    = round((float)$r->jumlah,3);
+                        $saldoAwal  = $saldoAkhir;
+                        $saldoAkhir = $saldoAwal-$out;
+                    }
+                }
+                
+                $hsl[]  = array('tanggal' => $tanggal,
+                                'material_id' => $r->material_id,
+                                'batch' => $batch,
+                                'satuan' => $r->satuan,
+                                'saldo_awal' => round((float)$saldoAwal,3),
+                                'pemasukan' => $in,
+                                'pengeluaran' =>$out,
+                                'saldo_akhir' => round((float)$saldoAkhir,3),
+                                'gudang' => $r->gudang);
+                
+                if($in > 0)
+                {
+                    $in = 0;
+                }
+            }
+        }
+        if(count($hsl)>0)
+        {
+            $this->Mod_mutasihasilproduksi->freeup_table();
+            $this->Mod_mutasihasilproduksi->create_master_batch($hsl);
+        }
     }
     
     function table()
@@ -51,6 +129,15 @@ class MutasiHasilProduksi extends Secure_area
             if(!empty($sel)) $sel .= "and ";
             
             $sel .= "(tanggal between '".$this->fungsi->convertDate($sD,"Y-m-d")."' and '".$this->fungsi->convertDate($eD,"Y-m-d")."')";
+        }
+        else
+        {
+            $ret['draw']            = 0;
+            $ret['recordsTotal']    = 0;
+            $ret['recordsFiltered'] = 0;
+            $ret['data']            = array();
+            echo json_encode($ret);
+            return;
         }
         
         if(!empty($id))
@@ -98,18 +185,37 @@ class MutasiHasilProduksi extends Secure_area
         
         
         $dMaRes = $dMa->result();
-        
+        $matcode = "";
+        $matdesc = "";
+        $batch      = "";
+        $lblmatcode = "";
+        $lblmatdesc = "";
+        $lblbatch      = "";
         foreach($dMaRes as $res)
         {
+            if($batch != $res->batch)
+            {
+                $batch = $res->batch;
+                $lblbatch = $res->batch;
+                $lblmatcode = $res->material_code;
+                $lblmatdesc = $res->material_desc;
+            }
+            else
+            {
+//                $lblbatch = "";
+                $lblmatcode = "";
+                $lblmatdesc = "";
+            }
+            
             $data[] = array(
-                'matCode'               => $res->material_code,
-                'matDes'                => $res->material_desc,
+                'matCode'               => $lblmatcode,
+                'matDes'                => $lblmatdesc,
                 'batch'                 => $res->batch,
                 'satuan'                => $res->satuan,
-                'saldo_awal'            => $res->saldo_awal,
-                'pemasukan'             => $res->pemasukan,
-                'pengeluaran'           => $res->pengeluaran,
-                'saldo_akhir'           => $res->saldo_akhir,
+                'saldo_awal'            => number_format($res->saldo_awal,3),
+                'pemasukan'             => number_format($res->pemasukan,3),
+                'pengeluaran'           => number_format($res->pengeluaran,3),
+                'saldo_akhir'           => number_format((float)($res->saldo_awal+$res->pemasukan-$res->pengeluaran),3),
                 'gudang'                => $res->gudang,
                 'mark'                  => $res->mark,
                 'mutasihasilproduksi_id'    => $res->mutasihasilproduksi_id,

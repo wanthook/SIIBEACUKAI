@@ -9,7 +9,8 @@ $controller = "PemasukkanBahanBaku";
         <!-- START NAVIGATOR -->
         <ul class="breadcrumbs">
             <li><a href="<?php echo site_url('Dashboard'); ?>"><i class="iconfa-home"></i></a> <span class="separator"></span></li>
-            <li>Pemasukkan Bahan Baku</li>            
+            <li><a href="<?php echo site_url('PemasukkanBahanBaku'); ?>">Pemasukkan Bahan Baku</a> <span class="separator"></span></li>
+            <li>Pemasukan Bahan Baku Detail</li>
         </ul><!-- END NAVIGATOR -->
 
         <!-- START PAGE HEADER -->
@@ -21,7 +22,7 @@ $controller = "PemasukkanBahanBaku";
             <div class="pageicon"><span class="iconfa-bar-chart"></span></div>
             <div class="pagetitle">
                 <h5>Laporan</h5>
-                <h1>Laporan Pemasukkan Bahan Baku</h1>
+                <h1>Laporan Pemasukkan Bahan Baku Detail</h1>
             </div>
         </div><!-- END PAGE HEADER -->		
 
@@ -30,38 +31,17 @@ $controller = "PemasukkanBahanBaku";
             <!-- START MAIN CONTAINER -->
             <div class="maincontentinner">
                 
-                <div class="headtitle">
-                    <div class="btn-group">
-                        <button data-toggle="dropdown" class="btn dropdown-toggle">Action <span class="caret"></span></button>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a href="#" id="buttonPdf"><i class="iconfa-arrow-down"></i>&nbsp;Download PDF</a>
-                            </li>
-                            <li>
-                                <a href="#" id="buttonXls"><i class="iconfa-arrow-down"></i>&nbsp;Download Excel</a>
-                            </li>
-                            <li>
-                                <a href="#" id="buttonPrint"><i class="iconfa-print"></i>&nbsp;Print</a>
-                            </li>
-<!--                            <li>
-                                <a href="#" id="downloadXlsButton"><i class="iconfa-download"></i>&nbsp;Download XLS</a>
-                            </li>-->
-                        </ul>
-                    </div>
-                    <h4 class="widgettitle">Tabel Pemasukkan Bahan Baku</h4>
-                    <table class="table">
-                        <thead>
+                <div class="headtitle">                    
+                    <h4 class="widgettitle">Tabel Pemasukkan Bahan Baku Detail</h4>
+<!--                    <table class="table table-bordered table-invoice">
                         <tr>
-                        <form id="frmSearch">
-                            <td><input type="text" id="txtDateStart" name="txtDateStart" class="input-sm" placeholder="Tanggal Awal">&nbsp;S/D&nbsp;<input type="text" id="txtDateEnd" name="txtDateEnd" class="input-sm" placeholder="Tanggal Akhir">&nbsp;<button id="cmdSearch" class="btn btn-sm"><i class="iconfa-search"></i></button></td>
-                        </form>
+                            <td class="width30">No Pabean:</td>
+                            <td class="width70"><strong>John Doe</strong></td>
                         </tr>
-                        </thead>
-                    </table>
+                    </table>-->
                     <table id="tableId" class="table table-bordered responsive">
                         <?php
-                        $arrHead = array('Action',
-                                         'Jenis Dokumen',
+                        $arrHead = array('Jenis Dokumen',
                                          'No. Pabeanan',
                                          'Tanggal Pabeanan',
                                          'No. Seri Barang Pabeanan',
@@ -70,7 +50,8 @@ $controller = "PemasukkanBahanBaku";
                                          'Kode Barang',
                                          'Nama Barang',
                                          'Batch',
-                                         'Jumlah',                                         'Satuan',										 										 'Jumlah (LBS)',                                         'Satuan (LBS)',
+                                         'Jumlah',                                         
+                                         'Satuan',										 										 'Jumlah (LBS)',                                         'Satuan (LBS)',
                                          'Qty PIB',
                                          'Amount PIB',
                                          'Loss QTY',
@@ -134,51 +115,10 @@ $controller = "PemasukkanBahanBaku";
     
     jQuery(document).ready(function() 
     {
-        jQuery('#cmdSearch').on('click',function(e)
-        {
-            e.preventDefault();
-            
-            table.ajax.reload();
-        });
-        
-        
-        jQuery('#buttonPdf').on('click',function(e)
-        {
-            e.preventDefault();
-            
-            var urli = "<?php echo site_url($controller.'/pdf'); ?>?sD="+jQuery('#txtDateStart').val()+"&eD="+jQuery('#txtDateEnd').val();
-        
-            window.open(urli);
-        });
-        
-        jQuery('#buttonXls').on('click',function(e)
-        {
-            e.preventDefault();
-            
-            var urli = "<?php echo site_url($controller.'/excel'); ?>?sD="+jQuery('#txtDateStart').val()+"&eD="+jQuery('#txtDateEnd').val();
-        
-//            var dialog = new BootstrapDialog(
-//            {
-//                title : "Informasi",
-//                message: "Menyiapkan file pdf"
-//            });
-
-            window.open(urli);
-        });
-        
-        jQuery('#buttonPrint').on('click',function(e)
-        {
-            e.preventDefault();
-            
-            var urli = "<?php echo site_url($controller.'/pdf'); ?>?sD="+jQuery('#txtDateStart').val()+"&eD="+jQuery('#txtDateEnd').val()+"&t=print";
-        
-            window.open(urli);
-        });
-        
         table = jQuery('#tableId').DataTable( {
-            "sPaginationType": "full_numbers",
+//            "sPaginationType": "full_numbers",
             "searching":false,
-            "ordering": true,
+//            "ordering": true,
             "scrollY": 400,
             "scrollX": true,
             "deferRender": true,
@@ -187,18 +127,16 @@ $controller = "PemasukkanBahanBaku";
             "lengthMenu": [ 100, 500, 1000, 1500, 2000 ],
             "ajax": 
             {
-                "url"   : "<?php echo site_url($controller.'/table'); ?>",
+                "url"   : "<?php echo site_url($controller.'/tableDetail'); ?>",
                 "type"  : 'POST',
                 "data"  : function(d)
                 {
-                    d['sD'] = jQuery('#txtDateStart').val();
-                    d['eD'] = jQuery('#txtDateEnd').val();
+                    d['p'] = "<?php echo $this->input->post_get('p'); ?>";
                     return d;
                 }
             },
             "columns": 
             [  
-                { "data": "action"},
                 { "data": "jenisDokumen" },
                 { "data": "no" },
                 { "data": "tgl" },
@@ -219,11 +157,6 @@ $controller = "PemasukkanBahanBaku";
                 { "data": "negara" }
                 
             ]
-        });
-        
-        jQuery('#txtDateStart,#txtDateEnd').datepicker(
-        {
-            format:'dd-mm-yyyy'
         });
     });
 </script>

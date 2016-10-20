@@ -60,7 +60,8 @@ $controller = "PengeluaranHasilProduksi";
                     </table>
                     <table id="tableId" class="table table-bordered responsive">
                         <?php
-                        $arrHead = array('No. PEB',
+                        $arrHead = array('No. PIB',
+                                         'No. PEB',
                                          'Tanggal PEB',
                                          'No. Bukti Pengeluaran',
                                          'Tanggal Bukti Pengeluaran',
@@ -210,6 +211,7 @@ $controller = "PengeluaranHasilProduksi";
             },
             "columns": 
             [  
+                { "data": "nopib" },
                 { "data": "nopeb" },
                 { "data": "tglpeb" },
                 { "data": "no" },
@@ -235,37 +237,6 @@ $controller = "PengeluaranHasilProduksi";
             format:'dd-mm-yyyy'
         });
     });
-//    function deleteData(id)
-//    {
-//        if(confirm('Apakah anda yakin ingin menghapus data ini?'))
-//        {
-//            jQuery.ajax({
-//                type: "POST",
-//                url: "<?php echo site_url($controller.'/procRemove'); ?>",
-//                dataType: 'json',
-//                data: {id:id},
-//                success: function(res) 
-//                {
-//                    if(res.status=='1')
-//                    {
-//                        jQuery.alerts.dialogClass = 'alert-success';
-//                        jAlert(res.msg, 'Informasi', function(){
-//                            jQuery.alerts.dialogClass = null; // reset to default
-//                        });
-//                        
-//                        $table.ajax.reload();
-//                    }
-//                    else if(res.status=='0')
-//                    {
-//                        jQuery.alerts.dialogClass = 'alert-warning';
-//                        jAlert(res.msg, 'Warning', function(){
-//                            jQuery.alerts.dialogClass = null; // reset to default
-//                        });
-//                    }
-//                }
-//            });
-//        }
-//    }
 </script>
 <style>
 th, td { white-space: nowrap; }

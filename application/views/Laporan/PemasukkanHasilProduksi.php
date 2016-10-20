@@ -60,7 +60,8 @@ $controller = "PemasukkanHasilProduksi";
                     </table>
                     <table id="tableId" class="table table-bordered responsive">
                         <?php
-                        $arrHead = array('No. Bukti Penerimaan',
+                        $arrHead = array('No. PIB',
+                                        'No. Bukti Penerimaan',
                                          'Tanggal Bukti Penerimaan',
                                          'Kode Barang',
                                          'Nama Barang',
@@ -189,7 +190,7 @@ $controller = "PemasukkanHasilProduksi";
             "deferRender": true,
             "processing": true,
             "serverSide": true,
-            "lengthMenu": [ 10, 25, 50, 75, 100, 500, 1000, 1500, 2000 ],
+            "lengthMenu": [ 50, 75, 100, 500, 1000, 1500, 2000 ],
             "ajax": 
             {
                 "url"   : "<?php echo site_url($controller.'/table'); ?>",
@@ -203,6 +204,7 @@ $controller = "PemasukkanHasilProduksi";
             },
             "columns": 
             [  
+                { "data": "nopib" },
                 { "data": "no" },
                 { "data": "tgl" },
                 { "data": "matCode" },
@@ -221,37 +223,6 @@ $controller = "PemasukkanHasilProduksi";
             format:'dd-mm-yyyy'
         });
     });
-//    function deleteData(id)
-//    {
-//        if(confirm('Apakah anda yakin ingin menghapus data ini?'))
-//        {
-//            jQuery.ajax({
-//                type: "POST",
-//                url: "<?php echo site_url($controller.'/procRemove'); ?>",
-//                dataType: 'json',
-//                data: {id:id},
-//                success: function(res) 
-//                {
-//                    if(res.status=='1')
-//                    {
-//                        jQuery.alerts.dialogClass = 'alert-success';
-//                        jAlert(res.msg, 'Informasi', function(){
-//                            jQuery.alerts.dialogClass = null; // reset to default
-//                        });
-//                        
-//                        $table.ajax.reload();
-//                    }
-//                    else if(res.status=='0')
-//                    {
-//                        jQuery.alerts.dialogClass = 'alert-warning';
-//                        jAlert(res.msg, 'Warning', function(){
-//                            jQuery.alerts.dialogClass = null; // reset to default
-//                        });
-//                    }
-//                }
-//            });
-//        }
-//    }
 </script>
 <style>
 th, td { white-space: nowrap; }

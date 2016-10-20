@@ -197,6 +197,7 @@ class Mod_pemakaianbahanbaku extends CI_Model
 		foreach($row as $res)
 		{
 			$arrins[] = array(
+                                "tipe"      => "OUT",
 				"no_pabean"	=> $res->nomor,
 				"no_bukti" => $res->nomor_bukti,
 				"tgl_bukti" => $res->tanggal_bukti,
@@ -209,10 +210,10 @@ class Mod_pemakaianbahanbaku extends CI_Model
 				"gudang" => $res->gudang
 			);
 		}
-		$this->db->from('tempmutasiout');
-        $this->db->truncate();
+//		$this->db->from('tempmutasiout');
+//        $this->db->truncate();
 		//print_r($arrins);
-		$this->db->insert_batch('tempmutasiout',$arrins);
+		$this->db->insert_batch('tempmutasi',$arrins);
 		
 		
 	}

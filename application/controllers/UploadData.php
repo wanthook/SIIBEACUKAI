@@ -202,7 +202,7 @@ class UploadData extends Secure_area
             /*
              * proc mutation
              */
-            $this->proc_mutation();
+//            $this->proc_mutation();
             
             $ret    = array("status" => 1, "msg" => "Data berhasil diupload.");
         }
@@ -775,6 +775,7 @@ class UploadData extends Secure_area
                 
                 $arrD                           = array();
                 
+                $arrD['nomorpib']               = trim($arrS['M']);
                 $arrD['nomor']                  = trim($arrS['C']);
                 $arrD['tanggal']                = $this->sapDate(trim($arrS['D']));
                 $arrD['material_id']            = $this->getMaterial(trim($arrS['E']),trim($arrS['F']));

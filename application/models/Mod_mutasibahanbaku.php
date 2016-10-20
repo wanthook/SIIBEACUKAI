@@ -26,27 +26,43 @@ class Mod_mutasibahanbaku extends CI_Model
     
     function get_temp()
     {
-        $this->db->select("a.material_id,
+        $this->db->select("a.tipe,
+                            a.material_id,
                             a.batch,
                             a.tgl_bukti,
-                            b.tgl_pakai,
+                            a.tgl_pakai,
                             a.satuan,
-                            a.jumlah jml_in,
-                            a.jumlah_lbs jmllbs_in,
-                            b.jumlah jml_out,
-                            b.jumlah_lbs jmlabs_out,
+                            a.jumlah,
+                            a.jumlah_lbs,
                             a.gudang");
-        $this->db->from("tempmutasiin a");
-        //$this->db->join("materialmaster mm","a.material_id = mm.material_id","LEFT");
-        $this->db->from("tempmutasiout b");
-        
-        $this->db->where("a.batch = b.batch");
-//        $this->db->where("a.batch = 'F0173AE16X' ");
-//        $this->db->order_by("batch, tgl_bukti, tgl_pakai","ASC");
-        $this->db->order_by("batch, tgl_bukti, tgl_pakai","ASC");
+        $this->db->from("tempmutasi a");
+        $this->db->order_by("batch,tipe, tgl_bukti, tgl_pakai","ASC");
         
         return $this->db->get();
     }
+//    function get_temp()
+//    {
+//        $this->db->select("a.material_id,
+//                            a.batch,
+//                            a.tgl_bukti,
+//                            b.tgl_pakai,
+//                            a.satuan,
+//                            a.jumlah jml_in,
+//                            a.jumlah_lbs jmllbs_in,
+//                            b.jumlah jml_out,
+//                            b.jumlah_lbs jmlabs_out,
+//                            a.gudang");
+//        $this->db->from("tempmutasiin a");
+//        //$this->db->join("materialmaster mm","a.material_id = mm.material_id","LEFT");
+//        $this->db->from("tempmutasiout b");
+//        
+//        $this->db->where("a.batch = b.batch");
+////        $this->db->where("a.batch = 'F0173AE16X' ");
+////        $this->db->order_by("batch, tgl_bukti, tgl_pakai","ASC");
+//        $this->db->order_by("batch, tgl_bukti, tgl_pakai","ASC");
+//        
+//        return $this->db->get();
+//    }
     
     public function select_master($search=array(),
                                   $limit=0,
