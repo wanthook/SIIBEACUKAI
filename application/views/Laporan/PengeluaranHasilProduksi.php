@@ -60,11 +60,8 @@ $controller = "PengeluaranHasilProduksi";
                     </table>
                     <table id="tableId" class="table table-bordered responsive">
                         <?php
-                        $arrHead = array('No. PIB',
-                                         'No. PEB',
+                        $arrHead = array('Action','No. PIB','No. PEB',
                                          'Tanggal PEB',
-                                         'No. Bukti Pengeluaran',
-                                         'Tanggal Bukti Pengeluaran',
                                          'Pembeli/Penerima',
                                          'Negara Tujuan',
                                          'Kode Barang',
@@ -77,6 +74,23 @@ $controller = "PengeluaranHasilProduksi";
                                          'Nilai Barang',
                                          'Gudang',
                                          'Material Dokumen');
+//                        $arrHead = array('No. PIB',
+//                                         'No. PEB',
+//                                         'Tanggal PEB',
+//                                         'No. Bukti Pengeluaran',
+//                                         'Tanggal Bukti Pengeluaran',
+//                                         'Pembeli/Penerima',
+//                                         'Negara Tujuan',
+//                                         'Kode Barang',
+//                                         'Nama Barang',
+//                                         'Batch',
+//                                         'Satuan',
+//                                         'Jumlah Dari Produksi',
+//                                         'Jumlah Dari Subkontrak',
+//                                         'Mata Uang',
+//                                         'Nilai Barang',
+//                                         'Gudang',
+//                                         'Material Dokumen');
                         ?>
                         <colgroup>
                             <?php
@@ -154,11 +168,6 @@ $controller = "PengeluaranHasilProduksi";
             
             var urli = "<?php echo site_url($controller.'/pdf'); ?>?sD="+jQuery('#txtDateStart').val()+"&eD="+jQuery('#txtDateEnd').val();
         
-//            var dialog = new BootstrapDialog(
-//            {
-//                title : "Informasi",
-//                message: "Menyiapkan file pdf"
-//            });
 
             window.open(urli);
         });
@@ -169,12 +178,6 @@ $controller = "PengeluaranHasilProduksi";
             
             var urli = "<?php echo site_url($controller.'/excel'); ?>?sD="+jQuery('#txtDateStart').val()+"&eD="+jQuery('#txtDateEnd').val();
         
-//            var dialog = new BootstrapDialog(
-//            {
-//                title : "Informasi",
-//                message: "Menyiapkan file pdf"
-//            });
-
             window.open(urli);
         });
         
@@ -211,11 +214,10 @@ $controller = "PengeluaranHasilProduksi";
             },
             "columns": 
             [  
+                { "data": "action" },
                 { "data": "nopib" },
                 { "data": "nopeb" },
                 { "data": "tglpeb" },
-                { "data": "no" },
-                { "data": "tgl" },
                 { "data": "pembeli" },
                 { "data": "negara_tujuan" },
                 { "data": "matCode" },

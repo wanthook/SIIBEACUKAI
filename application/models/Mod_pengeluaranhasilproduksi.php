@@ -88,17 +88,37 @@ class Mod_pengeluaranhasilproduksi extends CI_Model
         $this->db->join($this->table_user." b","a.created_by=b.user_id",'LEFT');
         $this->db->join($this->table_material." c","a.material_id=c.material_id",'LEFT');
         $this->db->group_by("a.nomorpeb");
-//        $this->db->group_by("a.tanggalpeb");
-//        $this->db->group_by("a.material_id");
-//        $this->db->group_by("a.batch");
         $this->db->order_by("a.tanggal","ASC");
         $this->db->order_by("a.nomor","ASC");
         return $this->db->get();
     }
     
+    public function detail($where="")
+    {
+        if(!empty($where))
+        {
+            $this->db->where($where);
+        }
+        
+        $this->db->select('distinct a.*',false);
+        $this->db->select('b.nama');
+        $this->db->select('tbla.nomorpib');
+        $this->db->select('c.material_code');
+        $this->db->select('c.material_desc');
+        $this->db->from($this->table_master." a");
+        $this->db->join("pemasukanhasilproduksi tbla","a.batch=tbla.batch",'LEFT');
+        $this->db->join($this->table_user." b","a.created_by=b.user_id",'LEFT');
+        $this->db->join($this->table_material." c","a.material_id=c.material_id",'LEFT');
+        
+        $this->db->order_by('a.tanggal,a.nomor','asc');
+        
+        return $this->db->get();
+        
+    }
+    
     public function prepare_mutation()
     {
-            $this->db->select('a.nomor');
+            $this->db->select('distinct a.nomor',false);
             $this->db->select('a.tanggal');
 //            $this->db->select('tbla.tanggal tanggal_bukti',false);
             $this->db->select('a.material_id');
@@ -122,7 +142,7 @@ class Mod_pengeluaranhasilproduksi extends CI_Model
                     $arrins[] = array(
                             "tipe"      => "OUT",
                             "no_bukti"	=> $res->nomor,
-                            "tgl_pengeluaran" => $res->tanggal,
+                            "tgl_bukti" => $res->tanggal,
 //                            "tgl_bukti" => $res->tanggal_bukti,
                             "material_id" => $res->material_id,
                             "batch" => $res->batch,

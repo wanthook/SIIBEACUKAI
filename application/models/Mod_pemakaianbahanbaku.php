@@ -94,10 +94,33 @@ class Mod_pemakaianbahanbaku extends CI_Model
 		$this->db->group_by("a.batch");
 		$this->db->order_by("a.tanggal","ASC");
 		$this->db->order_by("a.nomor","ASC");
-                //print_r($this->db);
-//                print_r($this->db->get());
+                
         return $this->db->get();
     }
+    
+    public function detail($where="")
+    {
+        if(!empty($where))
+        {
+            $this->db->where($where);
+        }
+        
+        $this->db->select('distinct a.*',false);
+        $this->db->select('b.nama');
+        $this->db->select('tbla.nomor nomor_pemakaian');
+        $this->db->select('c.material_code');
+        $this->db->select('c.material_desc');
+        $this->db->from($this->table_master." a");
+        $this->db->join("pemasukanbahanbaku tbla","a.batch=tbla.batch",'LEFT');
+        $this->db->join($this->table_user." b","a.created_by=b.user_id",'LEFT');
+        $this->db->join($this->table_material." c","a.material_id=c.material_id",'LEFT');
+        
+        $this->db->order_by('a.tanggal,a.nomor','asc');
+        
+        return $this->db->get();
+        
+    }
+    
     public function create_master($data)
     {
         $ret = "";

@@ -27,6 +27,12 @@ class PengeluaranHasilProduksi extends Secure_area
         $this->_viewloader("Laporan/PengeluaranHasilProduksi", '',"PengeluaranHasilProduksi");
     }
     
+    function detail()
+    {
+        $p = $this->input->post_get('p');
+        $this->_viewloader("Laporan/PengeluaranHasilProduksiDetail",array("p"=>$p),"PengeluaranHasilProduksi");
+    }
+    
     function table()
     {
         
@@ -62,11 +68,29 @@ class PengeluaranHasilProduksi extends Secure_area
         /*
          * order
          */
-        $arrCol = array('nomorpib',
-                        'nomorpeb',
+//        $arrCol = array('nomorpib',
+//                        'nomorpeb',
+//                        'tanggalpeb',
+//                        'nomor',
+//                        'tanggal',
+//                        'pembeli',
+//                        'negara_tujuan',
+//                        'material_code',
+//                        'material_desc',
+//                        'batch',
+//                        'satuan',
+//                        'jumlah',
+//                        'jumlah_subkontrak',
+//                        'mata_uang',
+//                        'nilai_barang',
+//                        'gudang',                        
+//                        'mat_doc',     
+//                        'mark',
+//                        'pengeluaranhasilproduksi_id');
+        
+        $arrCol = array(
+            'nomorpib','nomorpeb',
                         'tanggalpeb',
-                        'nomor',
-                        'tanggal',
                         'pembeli',
                         'negara_tujuan',
                         'material_code',
@@ -110,11 +134,12 @@ class PengeluaranHasilProduksi extends Secure_area
         foreach($dMaRes as $res)
         {
             $data[] = array(
+                'action'                => '<a class="btn btn-warning" href="'.  site_url("PengeluaranHasilProduksi/detail?p=".$res->nomorpeb).'">Detail</a>',
                 'nopib'                 => $res->nomorpib,
                 'nopeb'                 => $res->nomorpeb,
                 'tglpeb'                => $this->fungsi->convertDate($res->tanggalpeb,"d-m-Y"),
-                'no'                    => $res->nomor,
-                'tgl'                   => $this->fungsi->convertDate($res->tanggal,"d-m-Y"),
+//                'no'                    => $res->nomor,
+//                'tgl'                   => $this->fungsi->convertDate($res->tanggal,"d-m-Y"),
                 'pembeli'               => $res->pembeli,
                 'negara_tujuan'         => $res->negara_tujuan,
                 'matCode'               => $res->material_code,
@@ -135,6 +160,85 @@ class PengeluaranHasilProduksi extends Secure_area
         }
         
         $ret['draw']            = $draw;
+        $ret['recordsTotal']    = $totData;
+        $ret['recordsFiltered'] = $filData;
+        $ret['data']            = $data;
+        
+        echo json_encode($ret);
+    }
+    
+    function tableDetail()
+    {
+        
+        $sel = 'a.hapus=1 ';
+        
+        $id = $this->input->post_get('p');
+        /*
+         * order
+         */
+        $arrCol = array(
+            'nomorpib','nomorpeb',
+                        'tanggalpeb',
+                        'pembeli',
+                        'negara_tujuan',
+                        'material_code',
+                        'material_desc',
+                        'batch',
+                        'satuan',
+                        'jumlah',
+                        'jumlah_subkontrak',
+                        'mata_uang',
+                        'nilai_barang',
+                        'gudang',                        
+                        'mat_doc',     
+                        'mark',
+                        'pengeluaranhasilproduksi_id');
+        
+//        $oBy    = $arrCol[$order[0]['column']];
+//        $oTy    = $order[0]['dir'];
+        
+        $ret = array();
+                
+        $data = array();      
+        
+        $q      = $this->Mod_pengeluaranhasilproduksi->detail(array('a.nomorpeb'=>$id));
+        $totData = $q->num_rows();
+        
+        $filData = $q->num_rows();
+//        $q->free_result();
+        //echo $sel;
+        $dMa = $q;
+        
+        
+        $dMaRes = $dMa->result();
+        
+        foreach($dMaRes as $res)
+        {
+            $data[] = array(
+                'nopib'                 => $res->nomorpib,
+                'nopeb'                 => $res->nomorpeb,
+                'tglpeb'                => $this->fungsi->convertDate($res->tanggalpeb,"d-m-Y"),
+//                'no'                    => $res->nomor,
+//                'tgl'                   => $this->fungsi->convertDate($res->tanggal,"d-m-Y"),
+                'pembeli'               => $res->pembeli,
+                'negara_tujuan'         => $res->negara_tujuan,
+                'matCode'               => $res->material_code,
+                'matDes'                => $res->material_desc,
+                'batch'                 => $res->batch,
+                'satuan'                => $res->satuan,
+                'dariproduksi'          => $res->jumlah,
+                'darisubkontrak'        => $res->jumlah_subkontrak,
+                'matauang'              => $res->mata_uang,
+                'nilaibarang'           => $res->nilai_barang,
+                'gudang'                => $res->gudang,
+                'matdoc'                => $res->mat_doc,
+                'mark'                  => $res->mark,
+                'pengeluaranhasilproduksi_id' => $res->pengeluaranhasilproduksi_id,
+                'createdAt'             => $this->fungsi->convertDate($res->created_at,"d-m-Y H:i:s")
+            );
+        }
+        
+        $ret['draw']            = 1;
         $ret['recordsTotal']    = $totData;
         $ret['recordsFiltered'] = $filData;
         $ret['data']            = $data;

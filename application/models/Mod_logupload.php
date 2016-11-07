@@ -62,6 +62,10 @@ class Mod_logupload extends CI_Model
                 $this->db->order_by($kOrderBy,$vOrderBy);
             }
         }
+        else
+        {
+                $this->db->order_by('upload_id','DESC');
+        }
         
         if(count($group_by)>0)
         {

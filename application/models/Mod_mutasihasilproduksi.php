@@ -33,9 +33,12 @@ class Mod_mutasihasilproduksi extends CI_Model
                             a.tgl_pengeluaran,
                             a.satuan,
                             a.jumlah,
-                            a.gudang");
+                            a.gudang",false);
         $this->db->from("tempmutasihasilproduksi a");
-        $this->db->order_by("batch,tipe,tgl_bukti, tgl_pengeluaran","ASC");
+//        $this->db->group_by('a.batch');
+//        $this->db->group_by('a.tgl_bukti');
+//        $this->db->group_by('a.tipe');
+        $this->db->order_by("batch,material_id,tgl_bukti,tipe","ASC");
         
         return $this->db->get();
     }
@@ -112,7 +115,8 @@ class Mod_mutasihasilproduksi extends CI_Model
         $this->db->join($this->table_user." b","a.created_by=b.user_id",'LEFT');
         $this->db->join($this->table_material." c","a.material_id=c.material_id",'LEFT');
         $this->db->group_by('a.batch');
-        $this->db->order_by('a.batch, a.tanggal','ASC');
+        $this->db->group_by('a.material_id');
+        $this->db->order_by('a.batch, a.tanggal, a.material_id','ASC');
         return $this->db->get();
     }
     public function create_master($data)

@@ -197,7 +197,7 @@ class UploadData extends Secure_area
                                 "modified_at"         => date("Y-m-d H:i:s"));
             
             
-            $this->Mod_logupload->update_master($updData,array('field'=>upload_id,'value'=>$fileLogId));
+            $this->Mod_logupload->update_master($updData,array('field'=>'upload_id','value'=>$fileLogId));
             
             /*
              * proc mutation
@@ -326,20 +326,20 @@ class UploadData extends Secure_area
                     $total_insert   += $arrProc['t_insert'];
                     $total_update   += $arrProc['t_update'];
                 }
-                else if($judul=="LAPORAN MUTASI BAHAN BAKU")
-                {
-                    $tot            = $this->insert_mutasi_bahan_baku($sheetData,$uploadId);
-                    
-                    $total_data     += $tot;
-                    $total_mutasi   += $tot;
-                }
-                else if($judul=="LAPORAN MUTASI HASIL PRODUKSI")
-                {
-                    $tot            = $this->insert_mutasi_hasil_produksi($sheetData,$uploadId);
-                    
-                    $total_data     += $tot;
-                    $total_mutasi   += $tot;
-                }
+//                else if($judul=="LAPORAN MUTASI BAHAN BAKU")
+//                {
+//                    $tot            = $this->insert_mutasi_bahan_baku($sheetData,$uploadId);
+//                    
+//                    $total_data     += $tot;
+//                    $total_mutasi   += $tot;
+//                }
+//                else if($judul=="LAPORAN MUTASI HASIL PRODUKSI")
+//                {
+//                    $tot            = $this->insert_mutasi_hasil_produksi($sheetData,$uploadId);
+//                    
+//                    $total_data     += $tot;
+//                    $total_mutasi   += $tot;
+//                }
                 else if($judul=="LAPORAN PENYELESAIAN WASTE/SCRAP")
                 {
                     $arrProc        = array();                    
@@ -481,7 +481,7 @@ class UploadData extends Secure_area
                 $arrD['batch']                  = trim($arrS['K']);
                 $arrD['satuan']                 = trim($arrS['M']);
                 $arrD['jumlah']                 = $this->fungsi->toFloat(trim($arrS['L']));								
-				$arrD['jumlah_lbs']             = $this->fungsi->toFloat(trim($arrS['N']));
+		$arrD['jumlah_lbs']             = $this->fungsi->toFloat(trim($arrS['N']));
                 
                 $arrD['qty_pib']                = $this->fungsi->toFloat(trim($arrS['P']));
                 $arrD['amount_pib']             = $this->fungsi->toFloat(trim($arrS['Q']));
@@ -499,24 +499,18 @@ class UploadData extends Secure_area
                 
                 $arrD['no_doc_dn']              = trim($arrS['T']);
                 $arrD['negara']                 = trim($arrS['Y']);
-                $arrD['mark']                   = trim($arrS['Z']);
                 
                 if($rowCrc->num_rows()>0)
                 {
                     $res = $rowCrc->row();
 					
-                    if($arrD['mark']==$res->mark && $arrD['negara']==$res->negara && $arrD['no_doc_dn']==$res->no_doc_dn)
+                    if($arrD['negara']==$res->negara && $arrD['no_doc_dn']==$res->no_doc_dn)
                     {
                         continue;
                     }
                     else
                     {
                         $arrUpd     = array();
-                        
-                        if($arrD['mark']!=$res->mark)
-                        {
-                            $arrUpd['mark']     = $arrD['mark'];                        
-                        }
                         
                         if($arrD['negara']!=$res->negara)
                         {
@@ -605,32 +599,20 @@ class UploadData extends Secure_area
                 
                 $rowCrc                         = $this->Mod_pemakaianbahanbaku->select_master(array('a.crc'=>$crc32));
                 
-                $arrD['mark']                   = trim($arrS['M']);
-                
                 if($rowCrc->num_rows()>0)
                 {
                     $res = $rowCrc->row();
-					
-                    if($arrD['mark']==$res->mark)
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        
-                        $arrUpd = array(
-                                'upload_id'     => $uploadId,
-                                'mark'          => $arrD['mark'],
-                                'modified_by'   => $this->session->userdata('user_id'),
-                                'modified_at'   => date("Y-m-d H:i:s")
-                        );
+                    $arrUpd = array(
+                            'upload_id'     => $uploadId,
+                            'modified_by'   => $this->session->userdata('user_id'),
+                            'modified_at'   => date("Y-m-d H:i:s")
+                    );
 
-                        $this->Mod_pemakaianbahanbaku->update_master($arrUpd,array('field'=>'pemakaianbahanbaku_id','value'=>$res->pemakaianbahanbaku_id));
-                        
-                        $t_update   += 1;
-                        
-                        continue;
-                    }
+                    $this->Mod_pemakaianbahanbaku->update_master($arrUpd,array('field'=>'pemakaianbahanbaku_id','value'=>$res->pemakaianbahanbaku_id));
+
+                    $t_update   += 1;
+
+                    continue;
                 }
                 
                 $arrD['crc']                    = $crc32;
@@ -696,31 +678,20 @@ class UploadData extends Secure_area
                 
                 $crc32                          = sprintf("%x", crc32(implode('', $arrD)));
                 
-                $rowCrc                         = $this->Mod_pemakaiansubkontrak->select_master(array('crc'=>$crc32));
-                
-                $arrD['mark']                   = trim($arrS['K']);
+                $rowCrc                         = $this->Mod_pemakaiansubkontrak->select_master(array('a.crc'=>$crc32));
                 
                 if($rowCrc->num_rows()>0)
                 {
 		    $res = $rowCrc->row();
-					
-                    if($arrD['mark']==$res->mark)
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        $arrUpd = array(
-                                'upload_id'     => $uploadId,
-                                'mark'          => $arrD['mark'],
-                                'modified_by'   => $this->session->userdata('user_id'),
-                                'modified_at'   => date("Y-m-d H:i:s")
-                        );
+                    $arrUpd = array(
+                            'upload_id'     => $uploadId,
+                            'modified_by'   => $this->session->userdata('user_id'),
+                            'modified_at'   => date("Y-m-d H:i:s")
+                    );
 
-                        $this->Mod_pemakaiansubkontrak->update_master($arrUpd,array('field'=>'pemakaiansubkontrak_id','value'=>$res->pemakaiansubkontrak_id));
-                        $t_update   += 1;
-                        continue;
-                    }
+                    $this->Mod_pemakaiansubkontrak->update_master($arrUpd,array('field'=>'pemakaiansubkontrak_id','value'=>$res->pemakaiansubkontrak_id));
+                    $t_update   += 1;
+                    continue;
                 }
                 
                 $arrD['crc']                    = $crc32;
@@ -775,7 +746,7 @@ class UploadData extends Secure_area
                 
                 $arrD                           = array();
                 
-                $arrD['nomorpib']               = trim($arrS['M']);
+                $arrD['nomorpib']               = trim($arrS['L']);
                 $arrD['nomor']                  = trim($arrS['C']);
                 $arrD['tanggal']                = $this->sapDate(trim($arrS['D']));
                 $arrD['material_id']            = $this->getMaterial(trim($arrS['E']),trim($arrS['F']));
@@ -789,29 +760,19 @@ class UploadData extends Secure_area
                 
                 $rowCrc                         = $this->Mod_pemasukanhasilproduksi->select_master(array('crc'=>$crc32));
                 
-                $arrD['mark']                   = trim($arrS['L']);
-                
                 if($rowCrc->num_rows()>0)
                 {
-					$res = $rowCrc->row();
-					
-                    if($arrD['mark']==$res->mark)
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        $arrUpd = array(
-                                'upload_id'     => $uploadId,
-                                'mark'          => $arrD['mark'],
-                                'modified_by'   => $this->session->userdata('user_id'),
-                                'modified_at'   => date("Y-m-d H:i:s")
-                        );
+                    $res = $rowCrc->row();
+                    
+                    $arrUpd = array(
+                            'upload_id'     => $uploadId,
+                            'modified_by'   => $this->session->userdata('user_id'),
+                            'modified_at'   => date("Y-m-d H:i:s")
+                    );
 
-                        $this->Mod_pemasukanhasilproduksi->update_master($arrUpd,array('field'=>'pemasukanhasilproduksi_id','value'=>$res->pemasukanhasilproduksi_id));
-                        $t_update   += 1;
-                        continue;
-                    }
+                    $this->Mod_pemasukanhasilproduksi->update_master($arrUpd,array('field'=>'pemasukanhasilproduksi_id','value'=>$res->pemasukanhasilproduksi_id));
+                    $t_update   += 1;
+                    continue;
                 }
                 
                 $arrD['crc']                    = $crc32;
@@ -884,31 +845,21 @@ class UploadData extends Secure_area
                 
                 $crc32                          = sprintf("%x", crc32(implode('', $arrD)));
                 
-                $rowCrc                         = $this->Mod_pengeluaranhasilproduksi->select_master(array('crc'=>$crc32));
-                
-                $arrD['mark']                   = trim($arrS['T']);
+                $rowCrc                         = $this->Mod_pengeluaranhasilproduksi->select_master(array('a.crc'=>$crc32));
                 
                 if($rowCrc->num_rows()>0)
                 {
                     $res = $rowCrc->row();
-					
-                    if($arrD['mark']==$res->mark)
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        $arrUpd = array(
-                                'upload_id'     => $uploadId,
-                                'mark'          => $arrD['mark'],
-                                'modified_by'   => $this->session->userdata('user_id'),
-                                'modified_at'   => date("Y-m-d H:i:s")
-                        );
+                    
+                    $arrUpd = array(
+                            'upload_id'     => $uploadId,
+                            'modified_by'   => $this->session->userdata('user_id'),
+                            'modified_at'   => date("Y-m-d H:i:s")
+                    );
 
-                        $this->Mod_pengeluaranhasilproduksi->update_master($arrUpd,array('field'=>'pengeluaranhasilproduksi_id','value'=>$res->pengeluaranhasilproduksi_id));
-                        $t_update   += 1;
-                        continue;
-                    }
+                    $this->Mod_pengeluaranhasilproduksi->update_master($arrUpd,array('field'=>'pengeluaranhasilproduksi_id','value'=>$res->pengeluaranhasilproduksi_id));
+                    $t_update   += 1;
+                    continue;
                 }
                 
                 $arrD['crc']                    = $crc32;
@@ -970,7 +921,6 @@ class UploadData extends Secure_area
                 $arrD['saldo_akhir']            = $this->fungsi->toFloat(trim($arrS['M']));								
 				$arrD['saldo_akhir_lbs']            = $this->fungsi->toFloat(trim($arrS['N']));
                 $arrD['gudang']                 = trim($arrS['O']);
-                $arrD['mark']                   = trim($arrS['R']);
                 
                 $arrD['upload_id']              = $uploadId;
                 
@@ -1026,7 +976,6 @@ class UploadData extends Secure_area
                 $arrD['pengeluaran']            = $this->fungsi->toFloat(trim($arrS['I']));
                 $arrD['saldo_akhir']            = $this->fungsi->toFloat(trim($arrS['J']));
                 $arrD['gudang']                 = trim($arrS['K']);
-                $arrD['mark']                   = trim($arrS['N']);
                 
                 $arrD['upload_id']              = $uploadId;
                 
@@ -1093,30 +1042,17 @@ class UploadData extends Secure_area
                 $rowCrc                     = $this->Mod_penyelesaianwaste->select_master(array('crc'=>$crc32));
                 
                 $arrD['nomor']              = trim($arrS['C']);
-                $arrD['mark']               = trim($arrS['L']);
                 
                 if($rowCrc->num_rows()>0)
                 {
                     $res = $rowCrc->row();
 					
-                    if($arrD['mark']==$res->mark && $arrD['nomor']==$res->nomor)
+                    if($arrD['nomor']==$res->nomor)
                     {
                         continue;
                     }
                     else
-                    {
-                        if($arrD['mark']!=$res->mark)
-                        {
-                            $arrUpd = array(
-                                    'upload_id'     => $uploadId,
-                                    'mark'          => $arrD['mark'],
-                                    'modified_by'   => $this->session->userdata('user_id'),
-                                    'modified_at'   => date("Y-m-d H:i:s")
-                                );
-
-                            $this->Mod_penyelesaianwaste->update_master($arrUpd,array('field'=>'penyelesaianwaste_id','value'=>$res->penyelesaianwaste_id));
-                        }
-                        
+                    {                                                
                         if($arrD['nomor']!=$res->nomor)
                         {
                             $arrUpd = array(

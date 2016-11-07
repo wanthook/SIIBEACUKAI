@@ -157,12 +157,6 @@ $controller = "PemasukkanBahanBaku";
             
             var urli = "<?php echo site_url($controller.'/excel'); ?>?sD="+jQuery('#txtDateStart').val()+"&eD="+jQuery('#txtDateEnd').val();
         
-//            var dialog = new BootstrapDialog(
-//            {
-//                title : "Informasi",
-//                message: "Menyiapkan file pdf"
-//            });
-
             window.open(urli);
         });
         

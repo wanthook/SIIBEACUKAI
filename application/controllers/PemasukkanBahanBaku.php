@@ -131,20 +131,20 @@ class PemasukkanBahanBaku extends Secure_area
                 'matDes'                => $res->material_desc,
                 'batch'                 => $res->batch,
                 'satuan'                => $res->satuan,
-                'jumlah'                => $res->jumlah,
-                'lbsJumlah'             => $res->jumlah_lbs,								
+                'jumlah'                => number_format($res->jumlah,3),
+                'lbsJumlah'             => number_format($res->jumlah_lbs,3),								
 				'satuanlbs'             => 'LBS',
-                'pibqty'                => $res->qty_pib,
-                'pibamount'             => $res->amount_pib,
-                'dnqty'                 => $res->qty_dn,
+                'pibqty'                => number_format($res->qty_pib,3),
+                'pibamount'             => number_format($res->amount_pib,3),
+                'dnqty'                 => number_format($res->qty_dn,3),
 				 //'pibqty'                => $res->sQtyPib,
                 //'pibamount'             => $res->sAmtPib,
                 //'dnqty'                 => $res->sQtyDn,
-                'dnamount'              => $res->amount_dn,
+                'dnamount'              => number_format($res->amount_dn,3),
                 'dndoc'                => $res->no_doc_dn,
                 
                 'mataUang'              => $res->mata_uang,
-                'nilaiBarang'           => $res->nilai_barang,
+                'nilaiBarang'           => number_format($res->nilai_barang,3),
                 'gudang'                => $res->gudang,
                 'penerima'              => $res->penerima,
                 'negara'                => $res->negara,
@@ -203,7 +203,7 @@ class PemasukkanBahanBaku extends Secure_area
                 
         $data = array();      
         
-        $q      = $this->Mod_pemasukanbahanbaku->detail($id);
+        $q      = $this->Mod_pemasukanbahanbaku->detail(array('a.nomor'=>$id));
         $totData = $q->num_rows();
         
         $filData = $q->num_rows();
@@ -228,20 +228,20 @@ class PemasukkanBahanBaku extends Secure_area
                 'matDes'                => $res->material_desc,
                 'batch'                 => $res->batch,
                 'satuan'                => $res->satuan,
-                'jumlah'                => $res->jumlah,
-                'lbsJumlah'             => $res->jumlah_lbs,								
+                'jumlah'                => number_format($res->jumlah,3),
+                'lbsJumlah'             => number_format($res->jumlah_lbs,3),								
 				'satuanlbs'             => 'LBS',
-                'pibqty'                => $res->qty_pib,
-                'pibamount'             => $res->amount_pib,
-                'dnqty'                 => $res->qty_dn,
+                'pibqty'                => number_format($res->qty_pib,3),
+                'pibamount'             => number_format($res->amount_pib,3),
+                'dnqty'                 => number_format($res->qty_dn,3),
 				 //'pibqty'                => $res->sQtyPib,
                 //'pibamount'             => $res->sAmtPib,
                 //'dnqty'                 => $res->sQtyDn,
-                'dnamount'              => $res->amount_dn,
+                'dnamount'              => number_format($res->amount_dn,3),
                 'dndoc'                => $res->no_doc_dn,
                 
                 'mataUang'              => $res->mata_uang,
-                'nilaiBarang'           => $res->nilai_barang,
+                'nilaiBarang'           => number_format($res->nilai_barang,3),
                 'gudang'                => $res->gudang,
                 'penerima'              => $res->penerima,
                 'negara'                => $res->negara,
@@ -273,7 +273,8 @@ class PemasukkanBahanBaku extends Secure_area
             
             $sel .= "tanggal between '".$this->fungsi->convertDate($sD,"Y-m-d")."' and '".$this->fungsi->convertDate($eD,"Y-m-d")."'";
         }
-        $data    = $this->Mod_pemasukanbahanbaku->select_master($sel,0,0,array('nomor_bukti','asc'));
+//        $data    = $this->Mod_pemasukanbahanbaku->select_master($sel,0,0,array('nomor_bukti','asc'));
+        $data    = $this->Mod_pemasukanbahanbaku->detail($sel);
 //        echo $data->num_rows();
         $tabel = '';
         
@@ -394,7 +395,8 @@ class PemasukkanBahanBaku extends Secure_area
             $sel .= "tanggal between '".$this->fungsi->convertDate($sD,"Y-m-d")."' and '".$this->fungsi->convertDate($eD,"Y-m-d")."'";
         }
         
-        $data    = $this->Mod_pemasukanbahanbaku->select_master($sel,0,0,array('nomor','asc'));
+//        $data    = $this->Mod_pemasukanbahanbaku->select_master($sel,0,0,array('nomor','asc'));
+        $data    = $this->Mod_pemasukanbahanbaku->detail($sel);
         
         $head    = array('No.',
                         'Jenis Dokumen',

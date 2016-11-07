@@ -37,7 +37,8 @@ class MutasiHasilProduksi extends Secure_area
         
         $row = $this->Mod_mutasihasilproduksi->get_temp();
         
-        $batch = "";
+        $batch  = "";
+        $mat    = "";
         $in     = 0;
         $inLbs  = 0;
         $out    = 0;
@@ -49,15 +50,16 @@ class MutasiHasilProduksi extends Secure_area
         if($row->num_rows()>0)
         {
             $res = $row->result();
-//            print_r($res);
+            
             foreach($res as $r)
             {
-                $tanggal = $r->tgl_pengeluaran;
+                $tanggal = $r->tgl_bukti;
                 
                 if($batch!=$r->batch)
                 {
                     $tanggal = $r->tgl_bukti;
-                    $batch = $r->batch;
+                    $batch  = $r->batch;
+                    $mat    = $r->material_id;
                     $in     = round((float)$r->jumlah,3);
                     $out    = 0;
                     $saldoAwal  = 0;
@@ -65,6 +67,14 @@ class MutasiHasilProduksi extends Secure_area
                 }
                 else
                 {
+                    
+                    if($mat!=$r->material_id)
+                    {
+                        $saldoAwal  = 0;
+                        $saldoAkhir = 0;
+                        
+                        $mat = $r->material_id;
+                    }
                     if($r->tipe == 'IN')
                     {
                         $tanggal = $r->tgl_bukti;
@@ -80,6 +90,7 @@ class MutasiHasilProduksi extends Secure_area
                         $saldoAwal  = $saldoAkhir;
                         $saldoAkhir = $saldoAwal-$out;
                     }
+                    
                 }
                 
                 $hsl[]  = array('tanggal' => $tanggal,
@@ -185,31 +196,31 @@ class MutasiHasilProduksi extends Secure_area
         
         
         $dMaRes = $dMa->result();
-        $matcode = "";
-        $matdesc = "";
-        $batch      = "";
-        $lblmatcode = "";
-        $lblmatdesc = "";
-        $lblbatch      = "";
+//        $matcode = "";
+//        $matdesc = "";
+//        $batch      = "";
+//        $lblmatcode = "";
+//        $lblmatdesc = "";
+//        $lblbatch      = "";
         foreach($dMaRes as $res)
         {
-            if($batch != $res->batch)
-            {
-                $batch = $res->batch;
-                $lblbatch = $res->batch;
-                $lblmatcode = $res->material_code;
-                $lblmatdesc = $res->material_desc;
-            }
-            else
-            {
-//                $lblbatch = "";
-                $lblmatcode = "";
-                $lblmatdesc = "";
-            }
+//            if($batch != $res->batch)
+//            {
+//                $batch = $res->batch;
+//                $lblbatch = $res->batch;
+//                $lblmatcode = $res->material_code;
+//                $lblmatdesc = $res->material_desc;
+//            }
+//            else
+//            {
+////                $lblbatch = "";
+//                $lblmatcode = "";
+//                $lblmatdesc = "";
+//            }
             
             $data[] = array(
-                'matCode'               => $lblmatcode,
-                'matDes'                => $lblmatdesc,
+                'matCode'               => $res->material_code,
+                'matDes'                => $res->material_desc,
                 'batch'                 => $res->batch,
                 'satuan'                => $res->satuan,
                 'saldo_awal'            => number_format($res->saldo_awal,3),
@@ -278,6 +289,9 @@ class MutasiHasilProduksi extends Secure_area
             
             foreach ($res as $dataKey => $dataValue)
             {
+                $saldoAkhir = number_format((float)($dataValue->saldo_awal+$dataValue->pemasukan-$dataValue->pengeluaran),3);
+                
+                
                 $tabel .= '<tr>';
                 $tabel .= '<td>'.$no.'</td>';
                 $tabel .= '<td>'.$dataValue->material_code.'</td>';
@@ -287,7 +301,7 @@ class MutasiHasilProduksi extends Secure_area
                 $tabel .= '<td>'.$dataValue->saldo_awal.'</td>';
                 $tabel .= '<td>'.$dataValue->pemasukan.'</td>';
                 $tabel .= '<td>'.$dataValue->pengeluaran.'</td>';
-                $tabel .= '<td>'.$dataValue->saldo_akhir.'</td>';
+                $tabel .= '<td>'.$saldoAkhir.'</td>';
                 $tabel .= '<td>'.$dataValue->gudang.'</td>';
                 $tabel .= '<td>'.$dataValue->penerima.'</td>';
                 $tabel .= '</tr>';
@@ -359,6 +373,7 @@ class MutasiHasilProduksi extends Secure_area
             
             foreach ($res as $dataKey => $dataValue)
             {
+                $saldoAkhir = number_format((float)($dataValue->saldo_awal+$dataValue->pemasukan-$dataValue->pengeluaran),3);
                 
                 $table[]    = array(
                     $no,
@@ -369,9 +384,8 @@ class MutasiHasilProduksi extends Secure_area
                     $dataValue->saldo_awal,
                     $dataValue->pemasukan,
                     $dataValue->pengeluaran,
-                    $dataValue->saldo_akhir,
-                    $dataValue->gudang,
-                    $dataValue->penerima
+                    $saldoAkhir,
+                    $dataValue->gudang
                 );
                 $no++;
             }

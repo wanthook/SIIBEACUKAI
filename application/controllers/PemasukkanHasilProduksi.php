@@ -27,6 +27,13 @@ class PemasukkanHasilProduksi extends Secure_area
         $this->_viewloader("Laporan/PemasukkanHasilProduksi", '',"PemasukkanHasilProduksi");
     }
     
+    function detail()
+    {
+        $m = $this->input->post_get('m');
+        $b = $this->input->post_get('b');
+        $this->_viewloader("Laporan/PemasukkanHasilProduksiDetail",array("m"=>$m,"b"=>$b),"PemasukkanHasilProduksi");
+    }
+    
     function table()
     {
         
@@ -103,6 +110,7 @@ class PemasukkanHasilProduksi extends Secure_area
         foreach($dMaRes as $res)
         {
             $data[] = array(
+                'action'                => '<a class="btn btn-warning" href="'.  site_url("PemasukkanHasilProduksi/detail?b=".$res->batch.'&m='.$res->material_id).'">Detail</a>',
                 'nopib'                 => $res->nomorpib,
                 'no'                    => $res->nomor,
                 'tgl'                   => $this->fungsi->convertDate($res->tanggal,"d-m-Y"),
@@ -128,6 +136,74 @@ class PemasukkanHasilProduksi extends Secure_area
         echo json_encode($ret);
     }
     
+    function tableDetail()
+    {
+        
+        $sel = 'a.hapus=1 ';
+        
+        $m = $this->input->post_get('m');
+        $b = $this->input->post_get('b');
+        /*
+         * order
+         */
+        $arrCol = array('nomorpib',
+                        'nomor',
+                        'tanggal',
+                        'material_code',
+                        'material_desc',
+                        'batch',
+                        'satuan',
+                        'digunakan',
+                        'disubkontrak',
+                        'gudang',
+                        'mark',
+                        'pemasukanhasilproduksi_id');
+        
+//        $oBy    = $arrCol[$order[0]['column']];
+//        $oTy    = $order[0]['dir'];
+        
+        $ret = array();
+                
+        $data = array();      
+        
+        $q      = $this->Mod_pemasukanhasilproduksi->detail(array('a.material_id'=>$m,'a.batch'=>$b));
+        $totData = $q->num_rows();
+        
+        $filData = $q->num_rows();
+//        $q->free_result();
+        //echo $sel;
+        $dMa = $q;
+        
+        
+        $dMaRes = $dMa->result();
+        
+        foreach($dMaRes as $res)
+        {
+            $data[] = array(
+                'nopib'                 => $res->nomorpib,
+                'no'                    => $res->nomor,
+                'tgl'                   => $this->fungsi->convertDate($res->tanggal,"d-m-Y"),
+                'matCode'               => $res->material_code,
+                'matDes'                => $res->material_desc,
+                'batch'                 => $res->batch,
+                'satuan'                => $res->satuan,
+                'digunakan'             => $res->digunakan,
+                'disubkontrak'          => $res->disubkontrak,
+                'gudang'                => $res->gudang,
+                'mark'                  => $res->mark,
+                'pemasukanhasilproduksi_id' => $res->pemasukanhasilproduksi_id,
+                'createdAt'             => $this->fungsi->convertDate($res->created_at,"d-m-Y H:i:s")
+            );
+        }
+        
+        $ret['draw']            = 1;
+        $ret['recordsTotal']    = $totData;
+        $ret['recordsFiltered'] = $filData;
+        $ret['data']            = $data;
+        
+        echo json_encode($ret);
+    }
+    
     function pdf()
     {
         $sel    = "";
@@ -139,10 +215,11 @@ class PemasukkanHasilProduksi extends Secure_area
         {
             if(!empty($sel)) $sel .= "and ";
             
-            $sel .= "tanggal between '".$this->fungsi->convertDate($sD,"Y-m-d")."' and '".$this->fungsi->convertDate($eD,"Y-m-d")."'";
+            $sel .= "a.tanggal between '".$this->fungsi->convertDate($sD,"Y-m-d")."' and '".$this->fungsi->convertDate($eD,"Y-m-d")."'";
         }
-        $data    = $this->Mod_pemasukanhasilproduksi->select_master($sel,0,0,array('nomor','asc'));
+//        $data    = $this->Mod_pemasukanhasilproduksi->select_master($sel,0,0,array('nomor','asc'));
 //        echo $data->num_rows();
+        $data    = $this->Mod_pemasukanhasilproduksi->detail($sel);
         $tabel = '';
         
         $tabel .= '<table border="1">';
@@ -234,11 +311,11 @@ class PemasukkanHasilProduksi extends Secure_area
         {
             if(!empty($sel)) $sel .= "and ";
             
-            $sel .= "tanggal between '".$this->fungsi->convertDate($sD,"Y-m-d")."' and '".$this->fungsi->convertDate($eD,"Y-m-d")."'";
+            $sel .= "a.tanggal between '".$this->fungsi->convertDate($sD,"Y-m-d")."' and '".$this->fungsi->convertDate($eD,"Y-m-d")."'";
         }
         
-        $data    = $this->Mod_pemasukanhasilproduksi->select_master($sel,0,0,array('nomor','asc'));
-        
+//        $data    = $this->Mod_pemasukanhasilproduksi->select_master($sel,0,0,array('nomor','asc'));
+        $data    = $this->Mod_pemasukanhasilproduksi->detail($sel);
         $head    = array('No.',
                         'Nomor PIB',
                         'Nomor Bukti Penerimaan',

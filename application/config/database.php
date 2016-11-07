@@ -86,10 +86,10 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'localhost',
-	'username' => 'root',
-	'password' => 'root01',
-	'database' => 'dbsiibeacukaidb',
+	'hostname' => 'spinmill-inventory.com',
+	'username' => 'k1120379',
+	'password' => 'Spinmill55',
+	'database' => 'k1120379_dbsiibeacukaidb',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => 'siibek_',
 	'pconnect' => FALSE,

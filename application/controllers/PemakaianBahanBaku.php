@@ -126,6 +126,73 @@ class PemakaianBahanBaku extends Secure_area
         echo json_encode($ret);
     }
     
+    function tableDetail()
+    {
+        
+        $sel = 'a.hapus=1 ';
+        
+        $id = $this->input->post_get('p');
+        /*
+         * order
+         */
+        $arrCol = array('nomor_pemakaian','nomor',
+                        'tanggal',
+                        'material_code',
+                        'material_desc',
+                        'batch',
+                        'satuan',
+                        'digunakan',												'digunakan_lbs',
+                        'disubkontrak',
+                        'penerima',
+                        'mark',
+                        'pemakaianbahanbaku_id');
+        
+//        $oBy    = $arrCol[$order[0]['column']];
+//        $oTy    = $order[0]['dir'];
+        
+        $ret = array();
+                
+        $data = array();      
+        
+        $q      = $this->Mod_pemakaianbahanbaku->detail(array('a.nomor'=>$id));
+        $totData = $q->num_rows();
+        
+        $filData = $q->num_rows();
+//        $q->free_result();
+        //echo $sel;
+        $dMa = $q;
+        
+        
+        $dMaRes = $dMa->result();
+        
+        foreach($dMaRes as $res)
+        {
+            $data[] = array(
+				'nomor_pemakaian' => $res->nomor_pemakaian,
+                'no'                    => $res->nomor,
+                'tgl'                   => $this->fungsi->convertDate($res->tanggal,"d-m-Y"),
+                'matCode'               => $res->material_code,
+                'matDes'                => $res->material_desc,
+                'batch'                 => $res->batch,
+                'satuan'                => $res->satuan,
+                'digunakan'             => $res->digunakan,								'lbsDigunakan'          => $res->digunakan_lbs,
+                'disubkontrakkan'       => $res->disubkontrak,
+                'penerima'              => $res->penerima,
+                'mark'                  => $res->mark,
+                'pemakaianbahanbaku_id' => $res->pemakaianbahanbaku_id,
+                'createdAt'             => $this->fungsi->convertDate($res->created_at,"d-m-Y H:i:s")
+            );
+//            );
+        }
+        
+        $ret['draw']            = 1;
+        $ret['recordsTotal']    = $totData;
+        $ret['recordsFiltered'] = $filData;
+        $ret['data']            = $data;
+        
+        echo json_encode($ret);
+    }
+    
     function pdf()
     {
         $sel    = "";
@@ -137,10 +204,10 @@ class PemakaianBahanBaku extends Secure_area
         {
             if(!empty($sel)) $sel .= "and ";
             
-            $sel .= "tanggal between '".$this->fungsi->convertDate($sD,"Y-m-d")."' and '".$this->fungsi->convertDate($eD,"Y-m-d")."'";
+            $sel .= "a.tanggal between '".$this->fungsi->convertDate($sD,"Y-m-d")."' and '".$this->fungsi->convertDate($eD,"Y-m-d")."'";
         }
-        $data    = $this->Mod_pemakaianbahanbaku->select_master($sel,0,0,array('nomor','asc'));
-        
+//        $data    = $this->Mod_pemakaianbahanbaku->select_master($sel,0,0,array('nomor','asc'));
+        $data    = $this->Mod_pemakaianbahanbaku->detail($sel);
         $tabel = '';
         
         $tabel .= '<table border="1" style="width: 100%;">';
@@ -238,11 +305,11 @@ class PemakaianBahanBaku extends Secure_area
         {
             if(!empty($sel)) $sel .= "and ";
             
-            $sel .= "tanggal between '".$this->fungsi->convertDate($sD,"Y-m-d")."' and '".$this->fungsi->convertDate($eD,"Y-m-d")."'";
+            $sel .= "a.tanggal between '".$this->fungsi->convertDate($sD,"Y-m-d")."' and '".$this->fungsi->convertDate($eD,"Y-m-d")."'";
         }
         
-        $data    = $this->Mod_pemakaianbahanbaku->select_master($sel,0,0,array('nomor','asc'));
-        
+//        $data    = $this->Mod_pemakaianbahanbaku->select_master($sel,0,0,array('nomor','asc'));
+        $data    = $this->Mod_pemakaianbahanbaku->detail($sel);
         $head    = array('No.',
 		'No. Pabean',
                    'Nomor Bukti Pengeluaran',

@@ -60,8 +60,9 @@ $controller = "PemasukkanHasilProduksi";
                     </table>
                     <table id="tableId" class="table table-bordered responsive">
                         <?php
-                        $arrHead = array('No. PIB',
-                                        'No. Bukti Penerimaan',
+                        $arrHead = array('Action',
+                                         'No. PIB',
+                                         'No. Bukti Penerimaan',
                                          'Tanggal Bukti Penerimaan',
                                          'Kode Barang',
                                          'Nama Barang',
@@ -70,6 +71,16 @@ $controller = "PemasukkanHasilProduksi";
                                          'Jumlah Dari Produksi',
                                          'Jumlah Dari Subkontrak',
                                          'Gudang');
+//                        $arrHead = array('No. PIB',
+//                                         'No. Bukti Penerimaan',
+//                                         'Tanggal Bukti Penerimaan',
+//                                         'Kode Barang',
+//                                         'Nama Barang',
+//                                         'Batch',
+//                                         'Satuan',
+//                                         'Jumlah Dari Produksi',
+//                                         'Jumlah Dari Subkontrak',
+//                                         'Gudang');
                         ?>
                         <colgroup>
                             <?php
@@ -204,6 +215,7 @@ $controller = "PemasukkanHasilProduksi";
             },
             "columns": 
             [  
+                { "data": "action" },
                 { "data": "nopib" },
                 { "data": "no" },
                 { "data": "tgl" },
